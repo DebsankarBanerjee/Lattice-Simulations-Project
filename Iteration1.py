@@ -57,7 +57,7 @@ class App :
     def print2D( mat) :
         for row in mat :
             print(row)
-    @staticmethod
+
     def main( args) :
         mat = App.generateMatrix()
         # trajectory = [[0] * (3) for _ in range(6)]
