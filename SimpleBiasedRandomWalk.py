@@ -5,7 +5,7 @@ import random
 import math
 
 matrixSize = 21  # gets you a 21x21 matrix
-runtime = 100  # run for different times and compare different graphs
+runtime = 100  
 iterations = 1000
 xPoints = []
 yPoints = []
