@@ -6,12 +6,12 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-matrixSize = 21  # gets you a 21x21 matrix
+matrixSize = 41  # gets you a 21x21 matrix
 iterations = 1
 runtime = 1000
 beta = 1  # bias towards up and right
-omega = 1
-alpha = -1  # 1 for attracting random-walk, -1 for repulsing
+omega = 0.1  # omega > 1
+alpha = 1  # 1 for attracting random-walk, -1 for repulsing
 
 b = (1 / (beta + 1)) / 2  # pU, pR
 a = b * beta  # pD, pL
@@ -39,9 +39,9 @@ class App:
             i += 1
         return agentPosition
 
-    def weight(strength):
+    def weights(strength):
         V = omega * strength
-        weight = np.float64(np.exp(alpha * V))
+        weight = np.exp(alpha * V)
         return weight
 
     def moveAgent(mat, agentPosition, pU, pD, pL, pR):
@@ -82,24 +82,33 @@ class App:
             # print(str(agentPosition[0]) + ", " + str(agentPosition[1]) + ", " + str(runtime))
             for _ in range(runtime):
                 agentPosition = App.getAgentPosition(mat)
-                wU = App.weight(mem[agentPosition[0] - 1][agentPosition[1]])
-                wD = App.weight(mem[agentPosition[0] + 1][agentPosition[1]])
-                wL = App.weight(mem[agentPosition[0]][agentPosition[1] - 1])
-                wR = App.weight(mem[agentPosition[0]][agentPosition[1] + 1])
-                sum = wU + wD + wL + wR
-                print((wU + wD + wL + wR) / sum)
+                try:
+                    wU = App.weights(mem[agentPosition[0] - 1][agentPosition[1]])
+                except IndexError:
+                    wU = 0
+                try:
+                    wD = App.weights(mem[agentPosition[0] + 1][agentPosition[1]])
+                except IndexError:
+                    wD = 0
+                try:
+                    wL = App.weights(mem[agentPosition[0]][agentPosition[1] - 1])
+                except IndexError:
+                    wL = 0
+                try:
+                    wR = App.weights(mem[agentPosition[0]][agentPosition[1] + 1])
+                except IndexError:
+                    wR = 0
+                sum = (a * wU) + (b * wD) + (b * wL) + (a * wR)
                 mat[agentPosition[0]][agentPosition[1]] = 0
-                mat = App.moveAgent(mat, agentPosition, (wU / sum), (wD / sum), (wL / sum), (wR / sum))
-                agentPosition = App.getAgentPosition(mat)
+                mat = App.moveAgent(mat, agentPosition, a * (wU / sum), b * (wD / sum), b * (wL / sum), a * (wR / sum))
                 mem[agentPosition[0]][agentPosition[1]] = mem[agentPosition[0]][agentPosition[1]] + 1
-                # agentPosition = App.getAgentPosition(mat)
                 # print(str(agentPosition[0]) + ", " + str(agentPosition[1]) + ", " + str(runtime))
                 # App.print2D(mat)
             # print("")
             # App.print2D(mat)
             # App.print2D(mem)
             # print(runtime)
-            plt.imshow(mem)
+            plt.imshow(mem, vmin=0, vmax=10)
             plt.colorbar()
             plt.show()
 
