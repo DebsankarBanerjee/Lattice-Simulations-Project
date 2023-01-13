@@ -6,11 +6,11 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-matrixSize = 41  # gets you a 21x21 matrix
+matrixSize = 200  # gets you a 21x21 matrix
 iterations = 1
-runtime = 250
+runtime = 2000
 beta = 1  # bias towards up and right
-omega = 0.1
+omega = 1
 alpha = 0  # 1 for attracting random-walk, -1 for repulsing
 phi = 1
 
@@ -45,41 +45,39 @@ class App:
         weight = np.exp(alpha * V)
         return weight
 
+    def getOrientation(oldAgentPosition, newAgentPosition, orientation):
+        if newAgentPosition[0] == oldAgentPosition[0] - 1:
+            orientation = "U"
+        elif newAgentPosition[0] == oldAgentPosition[0] + 1:
+            orientation = "D"
+        elif newAgentPosition[1] == oldAgentPosition[1] - 1:
+            orientation = "L"
+        elif newAgentPosition[1] == oldAgentPosition[1] + 1:
+            orientation = "R"
+        return orientation
+
     @staticmethod
-    def persistence(persistence, pU, pD, pL, pR):
-        r = random.uniform(0, 1)
-        if r < pU:
-            if persistence[1] != np.exp(phi):
-                persistence[0] = np.exp(phi)
-                persistence[1] = 1
-                persistence[2] = 1
-                persistence[3] = 1
-            else:
-                App.persistence(persistence, 0, 0.33, 0.33, 0.33)
-        elif pU < r <= pU + pD:
-            if persistence[0] != np.exp(phi):
-                persistence[0] = 1
-                persistence[1] = np.exp(phi)
-                persistence[2] = 1
-                persistence[3] = 1
-            else:
-                App.persistence(persistence, 0.33, 0, 0.33, 0.33)
-        elif pU + pD < r <= pU + pD + pL:
-            if persistence[3] != np.exp(phi):
-                persistence[0] = 1
-                persistence[1] = 1
-                persistence[2] = np.exp(phi)
-                persistence[3] = 1
-            else:
-                App.persistence(persistence, 0.33, 0.33, 0, 0.33)
-        elif pU + pD + pL < r <= pU + pD + pL + pR:
-            if persistence[2] != np.exp(phi):
-                persistence[0] = 1
-                persistence[1] = 1
-                persistence[2] = 1
-                persistence[3] = np.exp(phi)
-            else:
-                App.persistence(persistence, 0.33, 0.33, 0.33, 0)
+    def persistence(persistence, orientation):
+        if orientation == "U":
+            persistence[0] = (1 + phi) / 4
+            persistence[1] = (1 - phi) / 4
+            persistence[2] = 1/4
+            persistence[3] = 1/4
+        elif orientation == "D":
+            persistence[0] = (1 - phi) / 4
+            persistence[1] = (1 + phi) / 4
+            persistence[2] = 1/4
+            persistence[3] = 1/4
+        elif orientation == "L":
+            persistence[0] = 1/4
+            persistence[1] = 1/4
+            persistence[2] = (1 + phi) / 4
+            persistence[3] = (1 - phi) / 4
+        elif orientation == "R":
+            persistence[0] = 1/4
+            persistence[1] = 1/4
+            persistence[2] = (1 - phi) / 4
+            persistence[3] = (1 + phi) / 4
         return persistence
 
     def moveAgent(mat, agentPosition, pU, pD, pL, pR, wU, wD, wL, wR, persistence):
@@ -116,11 +114,13 @@ class App:
             mat = App.generateMatrix()
             mem = App.generateMatrix()
             persistence = [0] * 4
+            orientation = "U"
             # App.print2D(mat)
             # agentPosition = App.getAgentPosition(mat)
             # print(str(agentPosition[0]) + ", " + str(agentPosition[1]) + ", " + str(runtime))
             for _ in range(runtime):
                 agentPosition = App.getAgentPosition(mat)
+                oldAgentPosition = agentPosition
                 try:
                     wU = App.weights(mem[agentPosition[0] - 1][agentPosition[1]])
                 except IndexError:
@@ -137,11 +137,12 @@ class App:
                     wR = App.weights(mem[agentPosition[0]][agentPosition[1] + 1])
                 except IndexError:
                     wR = 0
-                persistence = App.persistence(persistence, 0.25, 0.25, 0.25, 0.25)
+                persistence = App.persistence(persistence, orientation)
                 mat[agentPosition[0]][agentPosition[1]] = 0
-                # print(a * ((wU * persistence[0]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))) + b * ((wD * persistence[1]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))) + b * ((wL * persistence[2]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))) + a * ((wR * persistence[3]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))))
-                mat = App.moveAgent(mat, agentPosition, a * ((wU * persistence[0]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), b * ((wD * persistence[1]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), b * ((wL * persistence[2]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), a * ((wR * persistence[3]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), wU, wR, wD, wL, persistence)
                 mem[agentPosition[0]][agentPosition[1]] = mem[agentPosition[0]][agentPosition[1]] + 1
+                mat = App.moveAgent(mat, agentPosition, a * ((wU * persistence[0]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), b * ((wD * persistence[1]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), b * ((wL * persistence[2]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), a * ((wR * persistence[3]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), wU, wR, wD, wL, persistence)
+                newAgentPosition = App.getAgentPosition(mat)
+                orientation = App.getOrientation(oldAgentPosition, newAgentPosition, orientation)
                 # print(str(agentPosition[0]) + ", " + str(agentPosition[1]) + ", " + str(runtime))
                 # App.print2D(mat)
             # print("")
