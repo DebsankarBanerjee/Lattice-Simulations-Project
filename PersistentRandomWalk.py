@@ -151,7 +151,7 @@ class App:
             # print(runtime)
             plt.imshow(mem, vmin=0, vmax=10)
             plt.colorbar()
-            plt.title("alpha = " + str(alpha) + ", omega = " + str(omega) + ", beta = " + str(beta))
+            plt.title("alpha = " + str(alpha) + ", omega = " + str(omega) + ", beta = " + str(beta) + ", phi = " + str(phi))
             plt.show()
 
 
