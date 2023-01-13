@@ -8,9 +8,9 @@ import numpy as np
 
 matrixSize = 200  # gets you a 21x21 matrix
 iterations = 1
-runtime = 2000
+runtime = 1000
 beta = 1  # bias towards up and right
-omega = 1
+omega = 0.1
 alpha = 0  # 1 for attracting random-walk, -1 for repulsing
 phi = 1
 
