@@ -6,13 +6,14 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-matrixSize = 200  # gets you a 21x21 matrix
+matrixSize = 41  # gets you a 21x21 matrix
 iterations = 1
-runtime = 1000
+runtime = 50
 beta = 1  # bias towards up and right
-omega = 0.1
+omega = 1
 alpha = 0  # 1 for attracting random-walk, -1 for repulsing
-phi = 1
+phi = 0.5
+delta = 1
 
 b = (1 / (beta + 1)) / 2  # pU, pR
 a = b * beta  # pD, pL
@@ -56,6 +57,38 @@ class App:
             orientation = "R"
         return orientation
 
+    def setOrientation(orientation):
+        r = random.uniform(0, 1)
+        if orientation == "U":
+            if r < (1 + 2 * delta) / 3:
+                orientation = "U"
+            elif (1 + 2 * delta) / 3 < r < (1 + 2 * delta) / 3 + (1 - delta) / 3:
+                orientation = "L"
+            elif (1 + 2 * delta) / 3 + (1 - delta) / 3 < r < (1 + 2 * delta) / 3 + (1 - delta) / 3 + (1 - delta) / 3:
+                orientation = "R"
+        elif orientation == "D":
+            if r < (1 + 2 * delta) / 3:
+                orientation = "D"
+            elif (1 + 2 * delta) / 3 < r < (1 + 2 * delta) / 3 + (1 - delta) / 3:
+                orientation = "L"
+            elif (1 + 2 * delta) / 3 + (1 - delta) / 3 < r < (1 + 2 * delta) / 3 + (1 - delta) / 3 + (1 - delta) / 3:
+                orientation = "R"
+        elif orientation == "L":
+            if r < (1 - delta) / 3:
+                orientation = "U"
+            elif (1 - delta) / 3 < r < (1 - delta) / 3 + (1 - delta) / 3:
+                orientation = "D"
+            elif (1 - delta) / 3 + (1 - delta) / 3 < r < (1 - delta) / 3 + (1 - delta) / 3 + (1 + 2 * delta) / 3:
+                orientation = "L"
+        elif orientation == "R":
+            if r < (1 - delta) / 3:
+                orientation = "U"
+            elif (1 - delta) / 3 < r < (1 - delta) / 3 + (1 - delta) / 3:
+                orientation = "D"
+            elif (1 - delta) / 3 + (1 - delta) / 3 < r < (1 - delta) / 3 + (1 - delta) / 3 + (1 + 2 * delta) / 3:
+                orientation = "R"
+        return orientation
+
     @staticmethod
     def persistence(persistence, orientation):
         if orientation == "U":
@@ -81,7 +114,7 @@ class App:
         return persistence
 
     def moveAgent(mat, agentPosition, pU, pD, pL, pR, wU, wD, wL, wR, persistence):
-        r = random.uniform(0, 1)
+        r = np.float64(random.uniform(0, 1))
         if r < pU:
             if agentPosition[0] != 0:
                 mat[agentPosition[0] - 1][agentPosition[1]] = 1
@@ -139,10 +172,11 @@ class App:
                     wR = 0
                 persistence = App.persistence(persistence, orientation)
                 mat[agentPosition[0]][agentPosition[1]] = 0
-                mem[agentPosition[0]][agentPosition[1]] = mem[agentPosition[0]][agentPosition[1]] + 1
                 mat = App.moveAgent(mat, agentPosition, a * ((wU * persistence[0]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), b * ((wD * persistence[1]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), b * ((wL * persistence[2]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), a * ((wR * persistence[3]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), wU, wR, wD, wL, persistence)
                 newAgentPosition = App.getAgentPosition(mat)
-                orientation = App.getOrientation(oldAgentPosition, newAgentPosition, orientation)
+                mem[newAgentPosition[0]][newAgentPosition[1]] = mem[newAgentPosition[0]][newAgentPosition[1]] + 1
+                orientation = App.setOrientation(orientation)
+                # orientation = App.getOrientation(oldAgentPosition, newAgentPosition, orientation)
                 # print(str(agentPosition[0]) + ", " + str(agentPosition[1]) + ", " + str(runtime))
                 # App.print2D(mat)
             # print("")
