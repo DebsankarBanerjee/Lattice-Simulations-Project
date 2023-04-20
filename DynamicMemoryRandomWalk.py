@@ -7,15 +7,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-matrixSize = 71  # gets you a 21x21 matrix
+matrixSize = 51  # gets you a 21x21 matrix
 iterations = 1
 runtime = 100
 beta = 1  # bias towards up and right
 omega = 0
 alpha = 1  # 1 for attracting random-walk, -1 for repulsing
 phi = 1
-delta = 0.5
-values = []
+delta = 0.9
 epsilon = 0
 
 b = (1 / (beta + 1)) / 2  # pU, pR
@@ -133,24 +132,28 @@ class App:
         if r < pU:
             if agentPosition[0] != 0:
                 mat[agentPosition[0] - 1][agentPosition[1]] = 1
+                agentPosition[0] = agentPosition[0] - 1
             else:
                 App.moveAgent(mat, agentPosition, 0, (wD * b * persistence[1]) / (wD * b * persistence[1] + wL * b * persistence[2] + wR * a * persistence[3]), (wL * b * persistence[2]) / (wD * b * persistence[1] + wL * b * persistence[2] + wR * a * persistence[3]), (wR * a * persistence[3]) / (wD * b * persistence[1] + wL * b * persistence[2] + wR * a * persistence[3]), wU, wD, wL, wR, persistence)
         elif pU < r <= pU + pD:
             if agentPosition[0] != matrixSize - 1:
                 mat[agentPosition[0] + 1][agentPosition[1]] = 1
+                agentPosition[0] = agentPosition[0] + 1
             else:
                 App.moveAgent(mat, agentPosition, (wU * a * persistence[0]) / (wU * a * persistence[0] + wL * b * persistence[2] + wR * a * persistence[3]), 0, (wL * b * persistence[2]) / (wU * a * persistence[0] + wL * b * persistence[2] + wR * a * persistence[3]), (wR * a * persistence[3]) / (wU * a * persistence[0] + wL * b * persistence[2] + wR * a * persistence[3]), wU, wD, wL, wR, persistence)
         elif pU + pD < r <= pU + pD + pL:
             if agentPosition[1] != 0:
                 mat[agentPosition[0]][agentPosition[1] - 1] = 1
+                agentPosition[1] = agentPosition[1] - 1
             else:
                 App.moveAgent(mat, agentPosition, (wU * a * persistence[0]) / (wU * a * persistence[0] + wD * b * persistence[1] + wR * a * persistence[3]), (wD * b * persistence[1]) / (wU * a * persistence[0] + wD * b * persistence[1] + wR * a * persistence[3]), 0, (wR * a * persistence[3]) / (wU * a * persistence[0] + wD * b * persistence[1] + wR * a * persistence[3]), wU, wD, wL, wR, persistence)
         elif pU + pD + pL < r <= pU + pD + pL + pR:
             if agentPosition[1] != matrixSize - 1:
                 mat[agentPosition[0]][agentPosition[1] + 1] = 1
+                agentPosition[1] = agentPosition[1] + 1
             else:
                 App.moveAgent(mat, agentPosition, (wU * a * persistence[0]) / (wU * a * persistence[0] + wD * b * persistence[1] + wL * b * persistence[2]), (wD * b * persistence[1]) / (wU * a * persistence[0] + wD * b * persistence[1] + wL * b * persistence[2]), (wL * b * persistence[2]) / (wU * a * persistence[0] + wD * b * persistence[1] + wL * b * persistence[2]), 0, wU, wD, wL, wR, persistence)
-        return mat
+        return mat, agentPosition
 
     def print2D(mat):
         for row in mat:
@@ -163,10 +166,9 @@ class App:
             mem = App.generateMatrix()
             persistence = [0] * 4
             orientation = "U"
-            # agentPosition = App.getAgentPosition(mat)
+            agentPosition = App.getAgentPosition(mat)
             # print(str(agentPosition[0]) + ", " + str(agentPosition[1]) + ", " + str(runtime))
             for _ in range(runtime):
-                agentPosition = App.getAgentPosition(mat)
                 # oldAgentPosition = agentPosition
                 try:
                     wU = App.weights(mem[agentPosition[0] - 1][agentPosition[1]])
@@ -186,10 +188,9 @@ class App:
                     wR = 0
                 persistence = App.persistence(persistence, orientation)
                 mat[agentPosition[0]][agentPosition[1]] = 0
-                mat = App.moveAgent(mat, agentPosition, a * ((wU * persistence[0]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), b * ((wD * persistence[1]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), b * ((wL * persistence[2]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), a * ((wR * persistence[3]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), wU, wR, wD, wL, persistence)
-                newAgentPosition = App.getAgentPosition(mat)
+                mat, agentPosition = App.moveAgent(mat, agentPosition, a * ((wU * persistence[0]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), b * ((wD * persistence[1]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), b * ((wL * persistence[2]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), a * ((wR * persistence[3]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), wU, wR, wD, wL, persistence)
                 mem = App.memoryReduction(mem)
-                mem[newAgentPosition[0]][newAgentPosition[1]] = mem[newAgentPosition[0]][newAgentPosition[1]] + 1
+                mem[agentPosition[0]][agentPosition[1]] = mem[agentPosition[0]][agentPosition[1]] + 1
                 orientation = App.setOrientation(orientation)
                 # orientation = App.getOrientation(oldAgentPosition, newAgentPosition, orientation)
                 # print(str(agentPosition[0]) + ", " + str(agentPosition[1]) + ", " + str(runtime))
@@ -198,17 +199,17 @@ class App:
             # App.print2D(mat)
             # App.print2D(mem)
             # print(runtime)
-            agentPosition = App.getAgentPosition(mat)
+            # agentPosition = App.getAgentPosition(mat)
             # print("[", math.floor(matrixSize / 2), ",", math.floor(matrixSize / 2), "]")
             # print(str(agentPosition))
             # print(agentPosition[0] - 20)
             # print(agentPosition[1] - 20)
-            values.append(agentPosition[0] - 20)
-            values.append(agentPosition[1] - 20)
+            # values.append(agentPosition[0] - 20)
+            # values.append(agentPosition[1] - 20)
             plt.imshow(mem, vmin=0, vmax=10)
             plt.colorbar()
             plt.title("alpha = " + str(alpha) + ", omega = " + str(omega) + ", beta = " + str(beta) + ", phi = " + str(phi))
-            # plt.show()
+            plt.show()
 
 
 if __name__ == "__main__":
