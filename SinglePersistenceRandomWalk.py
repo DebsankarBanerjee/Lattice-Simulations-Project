@@ -41,18 +41,7 @@ class App:
         V = omega * strength
         weight = np.exp(alpha * V)
         return weight
-
-    def getOrientation(oldAgentPosition, newAgentPosition, orientation):
-        if newAgentPosition[0] == oldAgentPosition[0] - 1:
-            orientation = "U"
-        elif newAgentPosition[0] == oldAgentPosition[0] + 1:
-            orientation = "D"
-        elif newAgentPosition[1] == oldAgentPosition[1] - 1:
-            orientation = "L"
-        elif newAgentPosition[1] == oldAgentPosition[1] + 1:
-            orientation = "R"
-        return orientation
-
+    
     @staticmethod
     def persistence(persistence, orientation):
         if orientation == "U":
