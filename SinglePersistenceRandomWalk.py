@@ -87,7 +87,6 @@ class App:
                 agentPosition[0] = agentPosition[0] - 1
                 orientation = "U"
             else:
-                print("Hit the top boundary!")
                 App.moveAgent(mat, agentPosition, 0, (wD * b * persistence[1]) / (wD * b * persistence[1] + wL * b * persistence[2] + wR * a * persistence[3]), (wL * b * persistence[2]) / (wD * b * persistence[1] + wL * b * persistence[2] + wR * a * persistence[3]), (wR * a * persistence[3]) / (wD * b * persistence[1] + wL * b * persistence[2] + wR * a * persistence[3]), wU, wD, wL, wR, persistence, orientation)
         elif pU < r <= pU + pD:
             if agentPosition[0] != matrixSize - 1:
@@ -95,7 +94,6 @@ class App:
                 agentPosition[0] = agentPosition[0] + 1
                 orientation = "D"
             else:
-                print("Hit the bottom boundary!")
                 App.moveAgent(mat, agentPosition, (wU * a * persistence[0]) / (wU * a * persistence[0] + wL * b * persistence[2] + wR * a * persistence[3]), 0, (wL * b * persistence[2]) / (wU * a * persistence[0] + wL * b * persistence[2] + wR * a * persistence[3]), (wR * a * persistence[3]) / (wU * a * persistence[0] + wL * b * persistence[2] + wR * a * persistence[3]), wU, wD, wL, wR, persistence, orientation)
         elif pU + pD < r <= pU + pD + pL:
             if agentPosition[1] != 0:
@@ -103,7 +101,6 @@ class App:
                 agentPosition[1] = agentPosition[1] - 1
                 orientation = "L"
             else:
-                print("Hit the left boundary!")
                 App.moveAgent(mat, agentPosition, (wU * a * persistence[0]) / (wU * a * persistence[0] + wD * b * persistence[1] + wR * a * persistence[3]), (wD * b * persistence[1]) / (wU * a * persistence[0] + wD * b * persistence[1] + wR * a * persistence[3]), 0, (wR * a * persistence[3]) / (wU * a * persistence[0] + wD * b * persistence[1] + wR * a * persistence[3]), wU, wD, wL, wR, persistence, orientation)
         elif pU + pD + pL < r <= pU + pD + pL + pR:
             if agentPosition[1] != matrixSize - 1:
@@ -111,7 +108,6 @@ class App:
                 agentPosition[1] = agentPosition[1] + 1
                 orientation = "R"
             else:
-                print("Hit the right boundary!")
                 App.moveAgent(mat, agentPosition, (wU * a * persistence[0]) / (wU * a * persistence[0] + wD * b * persistence[1] + wL * b * persistence[2]), (wD * b * persistence[1]) / (wU * a * persistence[0] + wD * b * persistence[1] + wL * b * persistence[2]), (wL * b * persistence[2]) / (wU * a * persistence[0] + wD * b * persistence[1] + wL * b * persistence[2]), 0, wU, wD, wL, wR, persistence, orientation)
         return mat, agentPosition, orientation
 
