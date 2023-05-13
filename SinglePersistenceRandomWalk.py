@@ -12,7 +12,6 @@ omega = 0
 alpha = 1  
 epsilon = 0
 k = 0.2
-values = []
 
 b = (1 / (beta + 1)) / 2  
 a = b * beta  
@@ -148,9 +147,7 @@ class App:
             plt.imshow(mem, vmin=0, vmax=10)
             plt.colorbar()
             plt.title("alpha = " + str(alpha) + ", omega = " + str(omega) + ", beta = " + str(beta))
-            # plt.show()
-            values.append(agentPosition[0] - math.floor(matrixSize / 2))
-            values.append(agentPosition[1] - math.floor(matrixSize / 2))
+            plt.show()
 
 
 if __name__ == "__main__":
