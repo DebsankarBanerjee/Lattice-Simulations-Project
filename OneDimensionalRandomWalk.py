@@ -3,8 +3,8 @@ import math
 import matplotlib.pyplot as plt
 import numpy as np
 
-matrixSize = 50  # gets you a 21x21 matrix
-iterations = 1
+matrixSize = 1000  # gets you a 21x21 matrix
+iterations = 10
 runtime = 263
 beta = 1  # bias towards up and right
 omega = 0
@@ -12,9 +12,6 @@ alpha = 1  # 1 for attracting random-walk, -1 for repulsing
 epsilon = 0  # 0.01
 k = 0
 values = []
-
-# b = (1 / (beta + 1)) / 2  # pU, pR
-# a = b * beta  # pD, pL
 
 a = 1
 b = 1
@@ -100,37 +97,17 @@ class App:
                 persistence = App.persistence(persistence, orientation)
                 mat[agentPosition] = 0
                 mat, agentPosition, orientation = App.moveAgent(mat, agentPosition, b * ((wL * persistence[0]) / ((b * wL * persistence[0]) + (a * wR * persistence[1]))), a * ((wR * persistence[1]) / ((b * wL * persistence[0]) + (a * wR * persistence[1]))), wR, wL, persistence, orientation)
-                # App.print2D(mem)
-                # print("")
-                # mem = App.memoryReduction(mem)
                 mem[agentPosition] = mem[agentPosition] + 1
                 residence[agentPosition] = residence[agentPosition] + 1
                 evolution[agentPosition] = step
-                # orientation = App.getOrientation(oldAgentPosition, newAgentPosition, orientation)
-                # print(str(agentPosition[0]) + ", " + str(agentPosition[1]) + ", " + str(runtime))
-                # App.print2D(mat)
-            print(residence)
-            # print("")
-            # App.print2D(mat)
-            # App.print2D(mem)
-            # print(runtime)
-            # agentPosition = App.getAgentPosition(mat)
-            # print("[", math.floor(matrixSize / 2), ",", math.floor(matrixSize / 2), "]")
-            # print(str(agentPosition))
-            # print(agentPosition[0] - 20)
-            # print(agentPosition[1] - 20)
-            # values.append(agentPosition[0] - math.floor(matrixSize / 2))
-            # values.append(agentPosition[1] - math.floor(matrixSize / 2))
-            # plt.subplot(211)
-            # plt.imshow(evolution)
-            # plt.colorbar()
-            # plt.title("k = " + str(k) + ", omega = " + str(omega) + ", epsilon = " + str(epsilon))
-            # plt.subplot(212)
-            # plt.imshow(mem)
-            # plt.colorbar()
-            # plt.subplots_adjust(bottom=0.1, right=0.8, top=0.9)
-            # plt.show()
+            values.append(agentPosition - int(matrixSize / 2))
+        msd = 0
+        for x in values:
+            msd = msd + (x ** 2)
+        msd = msd / iterations
+        print(msd)
 
 
 if __name__ == "__main__":
     App.main()
+    
