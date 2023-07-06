@@ -13,7 +13,7 @@ matrixSize = 101  # gets you a 21x21 matrix
 iterations = 1
 runtime = 7500
 beta = 1  # bias towards up and right
-omega = 0.8
+omega = 0.5
 alpha = 1  # 1 for attracting random-walk, -1 for repulsing
 k = 0
 phaseLength = 5
@@ -203,44 +203,45 @@ class App:
             orientation = "U"
             agentPosition = App.getAgentPosition(mat)
             for step in range(runtime):
-                try:
-                    wU = App.weights(mem[agentPosition[0] - 1][agentPosition[1]])
-                except IndexError:
-                    wU = 0
-                try:
-                    wD = App.weights(mem[agentPosition[0] + 1][agentPosition[1]])
-                except IndexError:
-                    wD = 0
-                try:
-                    wL = App.weights(mem[agentPosition[0]][agentPosition[1] - 1])
-                except IndexError:
-                    wL = 0
-                try:
-                    wR = App.weights(mem[agentPosition[0]][agentPosition[1] + 1])
-                except IndexError:
-                    wR = 0
-                persistence = App.persistence(persistence, orientation)
-                mat[agentPosition[0]][agentPosition[1]] = 0
-                # print((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                #                a * wR * persistence[3]))
-                mat, agentPosition, orientation = App.moveAgent(mat, agentPosition, a * ((wU * persistence[0]) / (
-                            (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                                a * wR * persistence[3]))), b * ((wD * persistence[1]) / (
-                            (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                                a * wR * persistence[3]))), b * ((wL * persistence[2]) / (
-                            (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                                a * wR * persistence[3]))), a * ((wR * persistence[3]) / (
-                            (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                                a * wR * persistence[3]))), wU, wD, wR, wL, persistence, orientation)
-                # App.print2D(mem)
-                # print("")
-                mem[agentPosition[0]][agentPosition[1]] = mem[agentPosition[0]][agentPosition[1]] + 1
-                mem = App.memoryReduction(mem, ecm)
-                residence[agentPosition[0]][agentPosition[1]] = residence[agentPosition[0]][agentPosition[1]] + 1
-                evolution[agentPosition[0]][agentPosition[1]] = step
-                # orientation = App.getOrientation(oldAgentPosition, newAgentPosition, orientation)
-                # print(str(agentPosition[0]) + ", " + str(agentPosition[1]) + ", " + str(runtime))
-                # App.print2D(mat)
+                if mem[agentPosition[0]][agentPosition[1]] < 100:
+                    try:
+                        wU = App.weights(mem[agentPosition[0] - 1][agentPosition[1]])
+                    except IndexError:
+                        wU = 0
+                    try:
+                        wD = App.weights(mem[agentPosition[0] + 1][agentPosition[1]])
+                    except IndexError:
+                        wD = 0
+                    try:
+                        wL = App.weights(mem[agentPosition[0]][agentPosition[1] - 1])
+                    except IndexError:
+                        wL = 0
+                    try:
+                        wR = App.weights(mem[agentPosition[0]][agentPosition[1] + 1])
+                    except IndexError:
+                        wR = 0
+                    persistence = App.persistence(persistence, orientation)
+                    mat[agentPosition[0]][agentPosition[1]] = 0
+                    # print((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
+                    #                a * wR * persistence[3]))
+                    mat, agentPosition, orientation = App.moveAgent(mat, agentPosition, a * ((wU * persistence[0]) / (
+                                (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
+                                    a * wR * persistence[3]))), b * ((wD * persistence[1]) / (
+                                (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
+                                    a * wR * persistence[3]))), b * ((wL * persistence[2]) / (
+                                (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
+                                    a * wR * persistence[3]))), a * ((wR * persistence[3]) / (
+                                (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
+                                    a * wR * persistence[3]))), wU, wD, wR, wL, persistence, orientation)
+                    # App.print2D(mem)
+                    # print("")
+                    mem[agentPosition[0]][agentPosition[1]] = mem[agentPosition[0]][agentPosition[1]] + 1
+                    mem = App.memoryReduction(mem, ecm)
+                    residence[agentPosition[0]][agentPosition[1]] = residence[agentPosition[0]][agentPosition[1]] + 1
+                    evolution[agentPosition[0]][agentPosition[1]] = step
+                    # orientation = App.getOrientation(oldAgentPosition, newAgentPosition, orientation)
+                    # print(str(agentPosition[0]) + ", " + str(agentPosition[1]) + ", " + str(runtime))
+                    # App.print2D(mat)
             # print("")
             # App.print2D(mat)
             # App.print2D(mem)
@@ -257,7 +258,7 @@ class App:
             plt.colorbar()
             plt.title("k = " + str(k) + ", omega = " + str(omega))
             plt.subplot(212)
-            plt.imshow(mem)
+            plt.imshow(residence)
             plt.colorbar()
             plt.subplots_adjust(bottom=0.1, right=0.8, top=0.9)
             plt.show()
