@@ -8,23 +8,22 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.special import logsumexp
 
-# random.seed(21)
-matrixSize = 101  # gets you a 21x21 matrix
+# random.seed(10525)
+matrixSize = 201  # gets you a 21x21 matrix
 iterations = 1
-runtime = 7500
+runtime = 1
 beta = 1  # bias towards up and right
 omega = 0.5
-alpha = 1  # 1 for attracting random-walk, -1 for repulsing
 k = 0
 phaseLength = 5
 epsilon = 1
+agentPosArray = []
 
 # b = (1 / (beta + 1)) / 2  # pU, pR
 # a = b * beta  # pD, pL
 
 a = 1
 b = 1
-
 
 
 class App:
@@ -44,16 +43,16 @@ class App:
         while row < len(ecm):
             col = 0
             while col < len(ecm[row]):
-                if col <= 45:
+                if col <= (matrixSize - 1) / 2 - phaseLength:
                     value = epsilon * (col / int(matrixSize / 2))
                     for i in range(phaseLength):
                         ecm[row][col + i] = value
                     col += phaseLength
-                elif col == 50:
+                elif col == (matrixSize - 1) / 2:
                     ecm[row][col] = epsilon
                     col += 1
-                elif col > 50:
-                    value = epsilon * (1 - ((col - 46) / 50))
+                elif col > (matrixSize - 1) / 2:
+                    value = epsilon * (1 - ((col - ((matrixSize - 1) / 2 - phaseLength + 1)) / ((matrixSize - 1) / 2)))
                     for i in range(phaseLength):
                         ecm[row][col + i] = value
                     col += phaseLength
@@ -242,6 +241,7 @@ class App:
                     # orientation = App.getOrientation(oldAgentPosition, newAgentPosition, orientation)
                     # print(str(agentPosition[0]) + ", " + str(agentPosition[1]) + ", " + str(runtime))
                     # App.print2D(mat)
+            agentPosArray.append(agentPosition)
             # print("")
             # App.print2D(mat)
             # App.print2D(mem)
@@ -253,16 +253,22 @@ class App:
             # print(agentPosition[1] - 20)
             # values.append(agentPosition[0] - math.floor(matrixSize / 2))
             # values.append(agentPosition[1] - math.floor(matrixSize / 2))
-            plt.subplot(211)
-            plt.imshow(evolution)
-            plt.colorbar()
-            plt.title("k = " + str(k) + ", omega = " + str(omega))
-            plt.subplot(212)
-            plt.imshow(residence)
-            plt.colorbar()
-            plt.subplots_adjust(bottom=0.1, right=0.8, top=0.9)
+            # plt.subplot(211)
+            # plt.imshow(evolution)
+            # plt.colorbar()
+            # plt.title("k = " + str(k) + ", omega = " + str(omega))
+            # plt.subplot(212)
+            # plt.imshow(residence)
+            # plt.colorbar()
+            # plt.subplots_adjust(bottom=0.1, right=0.8, top=0.9)
+            plt.imshow(ecm)
             plt.show()
 
 
 if __name__ == "__main__":
     App.main()
+    # for i in range(len(agentPosArray)):
+    #     print(agentPosArray[i][0])
+    # print("\nThis is the barrier between x and y\n")
+    # for x in range(len(agentPosArray)):
+    #     print(agentPosArray[x][1])
