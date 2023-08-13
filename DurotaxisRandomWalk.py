@@ -9,15 +9,20 @@ import numpy as np
 from scipy.special import logsumexp
 
 # random.seed(10525)
-matrixSize = 201  # gets you a 21x21 matrix
-iterations = 1
-runtime = 1
+matrixSize = 101  # gets you a 21x21 matrix
+iterations = 10
+runtime = 5000
 beta = 1  # bias towards up and right
-omega = 0.5
+omega = 0
 k = 0
 phaseLength = 5
 epsilon = 1
-agentPosArray = []
+agentPosArray1 = []
+agentPosArray2 = []
+agentPosArray3 = []
+saveTime1 = 499
+saveTime2 = 1499
+saveTime3 = 4999
 
 # b = (1 / (beta + 1)) / 2  # pU, pR
 # a = b * beta  # pD, pL
@@ -73,6 +78,8 @@ class App:
         return agentPosition
 
     def weights(strength):
+        if strength > 100:
+            strength = 100
         V = omega * strength
         weight = np.exp(V)
         return weight
@@ -202,47 +209,50 @@ class App:
             orientation = "U"
             agentPosition = App.getAgentPosition(mat)
             for step in range(runtime):
-                if mem[agentPosition[0]][agentPosition[1]] < 100:
-                    try:
-                        wU = App.weights(mem[agentPosition[0] - 1][agentPosition[1]])
-                    except IndexError:
-                        wU = 0
-                    try:
-                        wD = App.weights(mem[agentPosition[0] + 1][agentPosition[1]])
-                    except IndexError:
-                        wD = 0
-                    try:
-                        wL = App.weights(mem[agentPosition[0]][agentPosition[1] - 1])
-                    except IndexError:
-                        wL = 0
-                    try:
-                        wR = App.weights(mem[agentPosition[0]][agentPosition[1] + 1])
-                    except IndexError:
-                        wR = 0
-                    persistence = App.persistence(persistence, orientation)
-                    mat[agentPosition[0]][agentPosition[1]] = 0
-                    # print((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                    #                a * wR * persistence[3]))
-                    mat, agentPosition, orientation = App.moveAgent(mat, agentPosition, a * ((wU * persistence[0]) / (
-                                (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                                    a * wR * persistence[3]))), b * ((wD * persistence[1]) / (
-                                (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                                    a * wR * persistence[3]))), b * ((wL * persistence[2]) / (
-                                (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                                    a * wR * persistence[3]))), a * ((wR * persistence[3]) / (
-                                (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                                    a * wR * persistence[3]))), wU, wD, wR, wL, persistence, orientation)
-                    # App.print2D(mem)
-                    # print("")
-                    mem[agentPosition[0]][agentPosition[1]] = mem[agentPosition[0]][agentPosition[1]] + 1
-                    mem = App.memoryReduction(mem, ecm)
-                    residence[agentPosition[0]][agentPosition[1]] = residence[agentPosition[0]][agentPosition[1]] + 1
-                    evolution[agentPosition[0]][agentPosition[1]] = step
-                    # orientation = App.getOrientation(oldAgentPosition, newAgentPosition, orientation)
-                    # print(str(agentPosition[0]) + ", " + str(agentPosition[1]) + ", " + str(runtime))
-                    # App.print2D(mat)
-            agentPosArray.append(agentPosition)
-            # print("")
+                # if mem[agentPosition[0]][agentPosition[1]] < 100:
+                try:
+                    wU = App.weights(mem[agentPosition[0] - 1][agentPosition[1]])
+                except IndexError:
+                    wU = 0
+                try:
+                    wD = App.weights(mem[agentPosition[0] + 1][agentPosition[1]])
+                except IndexError:
+                    wD = 0
+                try:
+                    wL = App.weights(mem[agentPosition[0]][agentPosition[1] - 1])
+                except IndexError:
+                    wL = 0
+                try:
+                    wR = App.weights(mem[agentPosition[0]][agentPosition[1] + 1])
+                except IndexError:
+                    wR = 0
+                persistence = App.persistence(persistence, orientation)
+                mat[agentPosition[0]][agentPosition[1]] = 0
+                # print((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
+                #                a * wR * persistence[3]))
+                mat, agentPosition, orientation = App.moveAgent(mat, agentPosition, a * ((wU * persistence[0]) / (
+                            (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
+                                a * wR * persistence[3]))), b * ((wD * persistence[1]) / (
+                            (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
+                                a * wR * persistence[3]))), b * ((wL * persistence[2]) / (
+                            (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
+                                a * wR * persistence[3]))), a * ((wR * persistence[3]) / (
+                            (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
+                                a * wR * persistence[3]))), wU, wD, wR, wL, persistence, orientation)
+                mem[agentPosition[0]][agentPosition[1]] = mem[agentPosition[0]][agentPosition[1]] + 1
+                # mem = App.memoryReduction(mem, ecm)
+                residence[agentPosition[0]][agentPosition[1]] = residence[agentPosition[0]][agentPosition[1]] + 1
+                evolution[agentPosition[0]][agentPosition[1]] = step
+                # orientation = App.getOrientation(oldAgentPosition, newAgentPosition, orientation)
+                # print(str(agentPosition[0]) + ", " + str(agentPosition[1]) + ", " + str(runtime))
+                # App.print2D(mat)
+                if step == saveTime1:
+                    agentPosArray1.append(list(agentPosition))
+                elif step == saveTime2:
+                    agentPosArray2.append(list(agentPosition))
+                elif step == saveTime3:
+                    agentPosArray3.append(list(agentPosition))
+            # print(""
             # App.print2D(mat)
             # App.print2D(mem)
             # print(runtime)
@@ -261,14 +271,29 @@ class App:
             # plt.imshow(residence)
             # plt.colorbar()
             # plt.subplots_adjust(bottom=0.1, right=0.8, top=0.9)
-            plt.imshow(ecm)
-            plt.show()
+            # plt.imshow(ecm)
+            # plt.show()
 
 
 if __name__ == "__main__":
     App.main()
-    # for i in range(len(agentPosArray)):
-    #     print(agentPosArray[i][0])
-    # print("\nThis is the barrier between x and y\n")
-    # for x in range(len(agentPosArray)):
-    #     print(agentPosArray[x][1])
+    print("These are the values for runtime = 500\n")
+    for a in range(len(agentPosArray1)):
+        print(agentPosArray1[a][0])
+    print("\nThis is the barrier between x and y\n")
+    for b in range(len(agentPosArray1)):
+        print(agentPosArray1[b][1])
+    print("\n")
+    print("These are the values for runtime = 2000\n")
+    for c in range(len(agentPosArray2)):
+        print(agentPosArray2[c][0])
+    print("\nThis is the barrier between x and y\n")
+    for d in range(len(agentPosArray2)):
+        print(agentPosArray2[d][1])
+    print("\n")
+    print("These are the values for runtime = 5000\n")
+    for e in range(len(agentPosArray3)):
+        print(agentPosArray3[e][0])
+    print("\nThis is the barrier between x and y\n")
+    for f in range(len(agentPosArray3)):
+        print(agentPosArray3[f][1])
