@@ -172,7 +172,6 @@ class Main:
 def main():
     for _ in range(iterations):
         mat, mem, agentArray = Main.generateMatrix()
-        Main.print2D(mat)
         for _ in range(runtime):
             for agent in agentArray:
                 try:
