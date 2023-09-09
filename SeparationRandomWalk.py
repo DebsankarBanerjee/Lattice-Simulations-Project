@@ -39,9 +39,7 @@ class Agent:
                 mem[self.agentPosition[0] - 1][self.agentPosition[1]] += 1
                 self.agentPosition[0] = self.agentPosition[0] - 1
                 self.orientation = "U"
-                # print("up")
             else:
-                print(str(self.id) + " — up bruh")
                 self.moveAgent(mat, mem, 0, (wD * b * self.persistence[1]) / (
                         wD * b * self.persistence[1] + wL * b * self.persistence[2] + wR * a * self.persistence[
                     3]), (wL * b * self.persistence[2]) / (
@@ -55,9 +53,7 @@ class Agent:
                 mem[self.agentPosition[0] + 1][self.agentPosition[1]] += 1
                 self.agentPosition[0] = self.agentPosition[0] + 1
                 self.orientation = "D"
-                # print("down")
             else:
-                print(str(self.id) + " — down bruh")
                 self.moveAgent(mat, mem, (wU * a * self.persistence[0]) / (
                         wU * a * self.persistence[0] + wL * b * self.persistence[2] + wR * a * self.persistence[
                     3]), 0, (wL * b * self.persistence[2]) / (
@@ -71,9 +67,7 @@ class Agent:
                 mem[self.agentPosition[0]][self.agentPosition[1] - 1] += 1
                 self.agentPosition[1] = self.agentPosition[1] - 1
                 self.orientation = "L"
-                # print("left")
             else:
-                print(str(self.id) + " — left bruh")
                 self.moveAgent(mat, mem, (wU * a * self.persistence[0]) / (
                         wU * a * self.persistence[0] + wD * b * self.persistence[1] + wR * a * self.persistence[
                     3]), (wD * b * self.persistence[1]) / (
@@ -87,9 +81,7 @@ class Agent:
                 mem[self.agentPosition[0]][self.agentPosition[1] + 1] += 1
                 self.agentPosition[1] = self.agentPosition[1] + 1
                 self.orientation = "R"
-                # print("right")
             else:
-                print(str(self.id) + " — right bruh")
                 self.moveAgent(mat, mem, (wU * a * self.persistence[0]) / (
                         wU * a * self.persistence[0] + wD * b * self.persistence[1] + wL * b * self.persistence[
                     2]), (wD * b * self.persistence[1]) / (
