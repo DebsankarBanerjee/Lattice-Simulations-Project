@@ -2,43 +2,46 @@ import random
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+import sys
 
 matrixSize = 101  # gets you a 21x21 matrix
-iterations = 1
+iterations = 3
 runtime = 5000
 beta = 1  # bias towards up and right
-alpha = 1  # 1 for attracting random-walk, -1 for repulsing
 epsilon = 0  # 0.01
-k = 0
-numberOfAgents = 30
-agentArray = []
+numberOfAgents = 50
+baselineAgents = []
+testedAgents = []
 
 b = (1 / (beta + 1)) / 2  # pU, pR
 a = b * beta  # pD, pL
 
+a = 1
+b = 1
+
 
 class Agent:
-    def __init__(self, agentPosition, orientation, persistence, designation, omega):
+    def __init__(self, agentPosition, orientation, k, persistence, designation, omega, id):
         self.agentPosition = agentPosition
         self.orientation = orientation
+        self.k = k
         self.persistence = persistence
         self.designation = designation
         self.omega = omega
+        self.id = id
 
     def moveAgent(self, mat, mem, pU, pD, pL, pR, wU, wD, wL, wR):
-        r = np.float64(random.uniform(0, 1))
+        r = random.uniform(0, 1)
         mat[self.agentPosition[0]][self.agentPosition[1]] = 0
         if r <= pU:
-            if self.agentPosition[0] != 0 and mat[self.agentPosition[0] - 1][self.agentPosition[1]] != 1 and mat[self.agentPosition[0] - 1][self.agentPosition[1]] != 2:
-                if self.designation == 1:
-                    mat[self.agentPosition[0] - 1][self.agentPosition[1]] = 1
-                elif self.designation == 2:
-                    mat[self.agentPosition[0] - 1][self.agentPosition[1]] = 2
+            if self.agentPosition[0] != 0 and mat[self.agentPosition[0] - 1][self.agentPosition[1]] == 0:
+                mat[self.agentPosition[0] - 1][self.agentPosition[1]] = self.designation
                 mem[self.agentPosition[0] - 1][self.agentPosition[1]] += 1
                 self.agentPosition[0] = self.agentPosition[0] - 1
                 self.orientation = "U"
                 # print("up")
             else:
+                print(str(self.id) + " — up bruh")
                 self.moveAgent(mat, mem, 0, (wD * b * self.persistence[1]) / (
                         wD * b * self.persistence[1] + wL * b * self.persistence[2] + wR * a * self.persistence[
                     3]), (wL * b * self.persistence[2]) / (
@@ -47,16 +50,14 @@ class Agent:
                                        wD * b * self.persistence[1] + wL * b * self.persistence[2] + wR * a *
                                        self.persistence[3]), wU, wD, wL, wR)
         elif pU < r <= pU + pD:
-            if self.agentPosition[0] != matrixSize - 1 and mat[self.agentPosition[0] + 1][self.agentPosition[1]] != 1 and mat[self.agentPosition[0] + 1][self.agentPosition[1]] != 2:
-                if self.designation == 1:
-                    mat[self.agentPosition[0] + 1][self.agentPosition[1]] = 1
-                elif self.designation == 2:
-                    mat[self.agentPosition[0] + 1][self.agentPosition[1]] = 2
+            if self.agentPosition[0] != matrixSize - 1 and mat[self.agentPosition[0] + 1][self.agentPosition[1]] == 0:
+                mat[self.agentPosition[0] + 1][self.agentPosition[1]] = self.designation
                 mem[self.agentPosition[0] + 1][self.agentPosition[1]] += 1
                 self.agentPosition[0] = self.agentPosition[0] + 1
                 self.orientation = "D"
                 # print("down")
             else:
+                print(str(self.id) + " — down bruh")
                 self.moveAgent(mat, mem, (wU * a * self.persistence[0]) / (
                         wU * a * self.persistence[0] + wL * b * self.persistence[2] + wR * a * self.persistence[
                     3]), 0, (wL * b * self.persistence[2]) / (
@@ -65,16 +66,14 @@ class Agent:
                                        wU * a * self.persistence[0] + wL * b * self.persistence[2] + wR * a *
                                        self.persistence[3]), wU, wD, wL, wR)
         elif pU + pD < r <= pU + pD + pL:
-            if self.agentPosition[1] != 0 and mat[self.agentPosition[0]][self.agentPosition[1] - 1] != 1 and mat[self.agentPosition[0]][self.agentPosition[1] - 1] != 2:
-                if self.designation == 1:
-                    mat[self.agentPosition[0]][self.agentPosition[1] - 1] = 1
-                elif self.designation == 2:
-                    mat[self.agentPosition[0]][self.agentPosition[1] - 1] = 2
+            if self.agentPosition[1] != 0 and mat[self.agentPosition[0]][self.agentPosition[1] - 1] == 0:
+                mat[self.agentPosition[0]][self.agentPosition[1] - 1] = self.designation
                 mem[self.agentPosition[0]][self.agentPosition[1] - 1] += 1
                 self.agentPosition[1] = self.agentPosition[1] - 1
                 self.orientation = "L"
                 # print("left")
             else:
+                print(str(self.id) + " — left bruh")
                 self.moveAgent(mat, mem, (wU * a * self.persistence[0]) / (
                         wU * a * self.persistence[0] + wD * b * self.persistence[1] + wR * a * self.persistence[
                     3]), (wD * b * self.persistence[1]) / (
@@ -83,16 +82,14 @@ class Agent:
                                        wU * a * self.persistence[0] + wD * b * self.persistence[1] + wR * a *
                                        self.persistence[3]), wU, wD, wL, wR)
         elif pU + pD + pL < r <= pU + pD + pL + pR:
-            if self.agentPosition[1] != matrixSize - 1 and mat[self.agentPosition[0]][self.agentPosition[1] + 1] != 1 and mat[self.agentPosition[0]][self.agentPosition[1] + 1] != 2:
-                if self.designation == 1:
-                    mat[self.agentPosition[0]][self.agentPosition[1] + 1] = 1
-                elif self.designation == 2:
-                    mat[self.agentPosition[0]][self.agentPosition[1] + 1] = 2
+            if self.agentPosition[1] != matrixSize - 1 and mat[self.agentPosition[0]][self.agentPosition[1] + 1] == 0:
+                mat[self.agentPosition[0]][self.agentPosition[1] + 1] = self.designation
                 mem[self.agentPosition[0]][self.agentPosition[1] + 1] += 1
                 self.agentPosition[1] = self.agentPosition[1] + 1
                 self.orientation = "R"
                 # print("right")
             else:
+                print(str(self.id) + " — right bruh")
                 self.moveAgent(mat, mem, (wU * a * self.persistence[0]) / (
                         wU * a * self.persistence[0] + wD * b * self.persistence[1] + wL * b * self.persistence[
                     2]), (wD * b * self.persistence[1]) / (
@@ -104,29 +101,31 @@ class Agent:
 
     def calculatePersistence(self):
         if self.orientation == "U":
-            self.persistence[0] = 1 - 3 * (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
-            self.persistence[1] = (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
-            self.persistence[2] = (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
-            self.persistence[3] = (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
+            self.persistence[0] = 1 - 3 * (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
+            self.persistence[1] = (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
+            self.persistence[2] = (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
+            self.persistence[3] = (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
         elif self.orientation == "D":
-            self.persistence[0] = (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
-            self.persistence[1] = 1 - 3 * (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
-            self.persistence[2] = (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
-            self.persistence[3] = (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
+            self.persistence[0] = (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
+            self.persistence[1] = 1 - 3 * (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
+            self.persistence[2] = (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
+            self.persistence[3] = (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
         elif self.orientation == "L":
-            self.persistence[0] = (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
-            self.persistence[1] = (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
-            self.persistence[2] = 1 - 3 * (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
-            self.persistence[3] = (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
+            self.persistence[0] = (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
+            self.persistence[1] = (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
+            self.persistence[2] = 1 - 3 * (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
+            self.persistence[3] = (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
         elif self.orientation == "R":
-            self.persistence[0] = (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
-            self.persistence[1] = (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
-            self.persistence[2] = (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
-            self.persistence[3] = 1 - 3 * (np.exp(-k) / (3 * np.exp(-k) + np.exp(k)))
+            self.persistence[0] = (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
+            self.persistence[1] = (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
+            self.persistence[2] = (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
+            self.persistence[3] = 1 - 3 * (np.exp(-self.k) / (3 * np.exp(-self.k) + np.exp(self.k)))
         return self.persistence
 
     @staticmethod
     def weights(strength, omega):
+        if strength > 100:
+            strength = 100
         V = omega * strength
         weight = np.exp(V)
         return weight
@@ -137,8 +136,8 @@ class Main:
     def generateMatrix():
         mat = [[0] * matrixSize for _ in range(matrixSize)]
         mem = [[0] * matrixSize for _ in range(matrixSize)]
-        mat, mem = Main.placeAgent(mat, mem)
-        return mat, mem
+        mat, mem, agentArray = Main.placeAgent(mat, mem)
+        return mat, mem, agentArray
 
     def print2D(mat):
         for row in mat:
@@ -158,52 +157,46 @@ class Main:
         return agentPosition
 
     def placeAgent(mat, mem):
+        agentArray = []
         for place in range(numberOfAgents):
             done = False
             while not done:
-                randomX = random.randint(45, 55)
-                randomY = random.randint(45, 55)
+                randomX = random.randint(int((matrixSize - 1) / 2 - 10), int((matrixSize - 1) / 2 + 10))
+                randomY = random.randint(int((matrixSize - 1) / 2 - 10), int((matrixSize - 1) / 2 + 10))
                 if mat[randomX][randomY] != 1 and mat[randomX][randomY] != 2:
-                    if place % 2 == 0:
+                    if (place + 1) % 2 == 0:
                         mat[randomX][randomY] = 1
                         mem[randomX][randomY] = 1
-                        agentArray.append(Agent([randomX, randomY], "U", [0] * 4, 1, 0))
+                        agentArray.append(Agent([randomX, randomY], "U", 0.5, [0] * 4, 1, 0, place + 1))
                         done = True
-                    elif place % 2 == 1:
+                    elif (place + 1) % 2 == 1:
                         mat[randomX][randomY] = 2
                         mem[randomX][randomY] = 2
-                        agentArray.append(Agent([randomX, randomY], "U", [0] * 4, 2, 1))
+                        agentArray.append(Agent([randomX, randomY], "U", 0.5, [0] * 4, 2, 1.0, place + 1))
                         done = True
-        return mat, mem
+        return mat, mem, agentArray
 
 
 def main():
     for _ in range(iterations):
-        mat, mem = Main.generateMatrix()
+        mat, mem, agentArray = Main.generateMatrix()
+        Main.print2D(mat)
         for _ in range(runtime):
             for agent in agentArray:
                 try:
                     wU = agent.weights(mem[agent.agentPosition[0] - 1][agent.agentPosition[1]], agent.omega)
-                    if wU > 5000:
-                        wU = 5000
                 except IndexError:
                     wU = 0
                 try:
                     wD = agent.weights(mem[agent.agentPosition[0] + 1][agent.agentPosition[1]], agent.omega)
-                    if wD > 5000:
-                        wD = 5000
                 except IndexError:
                     wD = 0
                 try:
                     wL = agent.weights(mem[agent.agentPosition[0]][agent.agentPosition[1] - 1], agent.omega)
-                    if wL > 5000:
-                        wL = 5000
                 except IndexError:
                     wL = 0
                 try:
                     wR = agent.weights(mem[agent.agentPosition[0]][agent.agentPosition[1] + 1], agent.omega)
-                    if wR > 5000:
-                        wR = 5000
                 except IndexError:
                     wR = 0
                 persistence = agent.calculatePersistence()
@@ -216,24 +209,22 @@ def main():
                         a * wR * persistence[3]))), a * ((wR * persistence[3]) / (
                         (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
                         a * wR * persistence[3]))), wU, wR, wD, wL)
-        plt.imshow(mat)
-        plt.colorbar()
-        plt.show()
-    for agent in agentArray:
-        if agent.designation == 1:
-            print(agent.agentPosition[0])
-    print("\nY and X barrier\n")
-    for agent in agentArray:
-        if agent.designation == 1:
-            print(agent.agentPosition[1])
-    print("\n1 and 2 barrier\n")
-    for agent in agentArray:
-        if agent.designation == 2:
-            print(agent.agentPosition[0])
-    print("\nY and X barrier\n")
-    for agent in agentArray:
-        if agent.designation == 2:
-            print(agent.agentPosition[1])
+        for agent in agentArray:
+            if agent.designation == 1:
+                baselineAgents.append(agent.agentPosition)
+            else:
+                testedAgents.append(agent.agentPosition)
 
 
 main()
+for a in range(len(baselineAgents)):
+    print(baselineAgents[a][0])
+print("\nY and X barrier\n")
+for b in range(len(baselineAgents)):
+    print(baselineAgents[b][1])
+print("\n1 and 2 barrier\n")
+for c in range(len(testedAgents)):
+    print(testedAgents[c][0])
+print("\nY and X barrier\n")
+for d in range(len(testedAgents)):
+    print(testedAgents[d][1])
