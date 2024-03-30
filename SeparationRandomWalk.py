@@ -6,7 +6,7 @@ import sys
 
 matrixSize = 101  # gets you a 21x21 matrix
 iterations = 1
-runtime = 5000
+runtime = 1
 beta = 1  # bias towards up and right
 epsilon = 0  # 0.01
 numberOfAgents = 50
@@ -185,6 +185,8 @@ class Agent:
         V = omega * strength
         if V > 20:
             V = 20
+        # if V > 709:
+        #     V = 709
         weight = np.exp(V)
         return weight
 
@@ -214,23 +216,36 @@ class Main:
             i += 1
         return agentPosition
 
+    @staticmethod
+    def getOrientation():
+        r = random.uniform(0, 1)
+        if r <= 0.25:
+            orientation = "U"
+        elif 0.25 < r <= 0.5:
+            orientation = "D"
+        elif 0.5 < r <= 0.75:
+            orientation = "L"
+        else:
+            orientation = "R"
+        return orientation
+
     def placeAgent(mat, mem):
         agentArray = []
         for place in range(numberOfAgents):
             done = False
             while not done:
-                randomX = random.randint((matrixSize - 1) / 2 - 10, (matrixSize - 1) / 2 + 10)
-                randomY = random.randint((matrixSize - 1) / 2 - 10, (matrixSize - 1) / 2 + 10)
+                randomX = random.randint((matrixSize - 1) / 2 - 5, (matrixSize - 1) / 2 + 5)
+                randomY = random.randint((matrixSize - 1) / 2 - 5, (matrixSize - 1) / 2 + 5)
                 if mat[randomX][randomY] != 1 and mat[randomX][randomY] != 2:
                     if (place + 1) % 2 == 0:
                         mat[randomX][randomY] = 1
                         mem[randomX][randomY] = 1
-                        agentArray.append(Agent([randomX, randomY], "U", [0] * 4, 1, 0))
+                        agentArray.append(Agent([randomX, randomY], Main.getOrientation(), [0] * 4, 1, 0))
                         done = True
                     elif (place + 1) % 2 == 1:
                         mat[randomX][randomY] = 2
                         mem[randomX][randomY] = 1
-                        agentArray.append(Agent([randomX, randomY], "U", [0] * 4, 2, 0.2))
+                        agentArray.append(Agent([randomX, randomY], Main.getOrientation(), [0] * 4, 2, 1))
                         done = True
         return mat, mem, agentArray
 
@@ -278,10 +293,10 @@ def main():
 
 
 main()
-# for d in range(len(testedAgents)):
-#     print(testedAgents[d][1])
-# print("\n2 and 1 barrier\n")
-# for b in range(len(baselineAgents)):
-#     print(baselineAgents[b][1])
+for d in range(len(testedAgents)):
+    print(testedAgents[d][1])
+print("\n2 and 1 barrier\n")
+for b in range(len(baselineAgents)):
+    print(baselineAgents[b][1])
 
 
