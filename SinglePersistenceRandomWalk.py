@@ -1,23 +1,23 @@
-# can make function setProbabilities and then return array with a and b values if current beta setup not working
-# 1421 and 1422 runtimes and omega 1 cause overflow and invalid value errors leading to agent snapping to top left
-
 import random
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+import csv
 
-matrixSize = 101  # gets you a 21x21 matrix
+matrixSize = 301
 iterations = 1
-runtime = 500
-beta = 1  # bias towards up and right
-omega = 0
-alpha = 0  # 1 for attracting random-walk, -1 for repulsing
-epsilon = 0  # 0.01
+runtime = 5
+beta = 1
+omega = 0.5
+epsilon = 0.05
 k = 0
 values = []
 
-b = (1 / (beta + 1)) / 2  # pU, pR
-a = b * beta  # pD, pL
+b = (1 / (beta + 1)) / 2
+a = b * beta
+
+a = 1
+b = 1
 
 
 class App:
@@ -44,17 +44,21 @@ class App:
 
     def weights(strength):
         V = omega * strength
-        weight = np.exp(alpha * V)
+        if V > 709:
+            V = 709
+        weight = np.exp(V)
         return weight
 
-    def getOrientation(oldAgentPosition, newAgentPosition, orientation):
-        if newAgentPosition[0] == oldAgentPosition[0] - 1:
+    @staticmethod
+    def getOrientation():
+        r = random.uniform(0, 1)
+        if r <= 0.25:
             orientation = "U"
-        elif newAgentPosition[0] == oldAgentPosition[0] + 1:
+        elif 0.25 < r <= 0.5:
             orientation = "D"
-        elif newAgentPosition[1] == oldAgentPosition[1] - 1:
+        elif 0.5 < r <= 0.75:
             orientation = "L"
-        elif newAgentPosition[1] == oldAgentPosition[1] + 1:
+        else:
             orientation = "R"
         return orientation
 
@@ -87,10 +91,6 @@ class App:
         while i < len(mem):
             j = 0
             while j < len(mem[i]):
-                #  r = random.uniform(0, 1)
-                #  if r < (epsilon * mem[i][j]) / (1 + epsilon * mem[i][j]):
-                    # print(r)
-                    # print((epsilon * mem[i][j]) / (1 + epsilon * mem[i][j]))
                 mem[i][j] = mem[i][j] - epsilon * mem[i][j]
                 if mem[i][j] < 0:
                     mem[i][j] = 0
@@ -100,7 +100,7 @@ class App:
 
     def moveAgent(mat, agentPosition, pU, pD, pL, pR, wU, wD, wL, wR, persistence, orientation):
         r = random.uniform(0, 1)
-        if r < pU:
+        if r <= pU:
             if agentPosition[0] != 0:
                 mat[agentPosition[0] - 1][agentPosition[1]] = 1
                 agentPosition[0] = agentPosition[0] - 1
@@ -139,13 +139,15 @@ class App:
         for _ in range(iterations):
             mat = App.generateMatrix()
             mem = App.generateMatrix()
-            residence = App.generateMatrix()
+            # residence = App.generateMatrix()
             evolution = App.generateMatrix()
             persistence = [0] * 4
-            orientation = "U"
+            orientation = App.getOrientation()
             agentPosition = App.getAgentPosition(mat)
-            for step in range(runtime):
-                if mem[agentPosition[0]][agentPosition[1]] < 100:
+            with open('msd.csv', 'w', newline='') as file:
+                writer = csv.writer(file)
+                writer.writerow(['x', 'y'])
+                for step in range(runtime):
                     try:
                         wU = App.weights(mem[agentPosition[0] - 1][agentPosition[1]])
                     except IndexError:
@@ -165,32 +167,16 @@ class App:
                     persistence = App.persistence(persistence, orientation)
                     mat[agentPosition[0]][agentPosition[1]] = 0
                     mat, agentPosition, orientation = App.moveAgent(mat, agentPosition, a * ((wU * persistence[0]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), b * ((wD * persistence[1]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), b * ((wL * persistence[2]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), a * ((wR * persistence[3]) / ((a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (a * wR * persistence[3]))), wU, wD, wR, wL, persistence, orientation)
-                    # App.print2D(mem)
-                    # print("")
                     mem = App.memoryReduction(mem)
                     mem[agentPosition[0]][agentPosition[1]] = mem[agentPosition[0]][agentPosition[1]] + 1
-                    residence[agentPosition[0]][agentPosition[1]] = residence[agentPosition[0]][agentPosition[1]] + 1
                     evolution[agentPosition[0]][agentPosition[1]] = step
-                    # orientation = App.getOrientation(oldAgentPosition, newAgentPosition, orientation)
-                    # print(str(agentPosition[0]) + ", " + str(agentPosition[1]) + ", " + str(runtime))
-                    # App.print2D(mat)
-            # print("")
-            # App.print2D(mat)
-            # App.print2D(mem)
-            # print(runtime)
-            # agentPosition = App.getAgentPosition(mat)
-            # print("[", math.floor(matrixSize / 2), ",", math.floor(matrixSize / 2), "]")
-            # print(str(agentPosition))
-            # print(agentPosition[0] - 20)
-            # print(agentPosition[1] - 20)
-            # values.append(agentPosition[0] - math.floor(matrixSize / 2))
-            # values.append(agentPosition[1] - math.floor(matrixSize / 2))
+                    writer.writerow([(agentPosition[0] - int(matrixSize / 2)), (agentPosition[1] - int(matrixSize / 2))])
             plt.subplot(211)
             plt.imshow(evolution)
             plt.colorbar()
-            plt.title("k = " + str(k) + ", omega = " + str(omega) + ", epsilon = " + str(epsilon))
+            # plt.title("k = " + str(k) + ", omega = " + str(omega) + ", epsilon = " + str(epsilon))
             plt.subplot(212)
-            plt.imshow(mem)
+            plt.imshow(mem, vmin=0, vmax=10)
             plt.colorbar()
             plt.subplots_adjust(bottom=0.1, right=0.8, top=0.9)
             plt.show()
