@@ -4,14 +4,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-matrixSize = 201
+matrixSize = 101  # gets you a 21x21 matrix
 iterations = 1
-runtime = 5000
-epsilon = 0 
+runtime = 10000
+beta = 1  # bias towards up and right
+epsilon = 0  # 0.01
 numberOfAgents = 50
 k = 0
 baselineAgents = []
 testedAgents = []
+
+b = (1 / (beta + 1)) / 2  # pU, pR
+a = b * beta  # pD, pL
+
 a = 1
 b = 1
 
@@ -68,7 +73,7 @@ class Agent:
                 if self.agentPosition[1] != 0 and mat[self.agentPosition[0]][self.agentPosition[1] - 1] == 0:
                     if self.agentPosition[1] != matrixSize - 1 and mat[self.agentPosition[0]][self.agentPosition[1] + 1] == 0:
                         self.moveAgent(mat, mem, (wU * self.persistence[0]) / (wU * self.persistence[0] + wL * self.persistence[2] + wR * self.persistence[3]),
-                                       0, (wL * self.persistence[2]) / wU * self.persistence[0] + wL * self.persistence[2] + wR * self.persistence[3],
+                                       0, (wL * self.persistence[2]) / (wU * self.persistence[0] + wL * self.persistence[2] + wR * self.persistence[3]),
                                        (wR * self.persistence[3]) / (wU * self.persistence[0] + wL * self.persistence[2] + wR * self.persistence[3]), wU, wD, wL, wR)
                     else:
                         self.moveAgent(mat, mem, (wU * self.persistence[0]) / (wU * self.persistence[0] + wL * self.persistence[2]), 0,
@@ -178,10 +183,10 @@ class Agent:
     @staticmethod
     def weights(strength, omega):
         V = omega * strength
-        # if V > 20: memory thresholding
-        #     V = 20
-        if V > 709:
-            V = 709
+        if V > 20:
+            V = 20
+        # if V > 709:
+        #     V = 709
         weight = np.exp(V)
         return weight
 
@@ -235,12 +240,12 @@ class Main:
                     if (place + 1) % 2 == 0:
                         mat[randomX][randomY] = 1
                         mem[randomX][randomY] = 1
-                        agentArray.append(Agent([randomX, randomY], Main.getOrientation(), [0] * 4, 1, 0.3))
+                        agentArray.append(Agent([randomX, randomY], Main.getOrientation(), [0] * 4, 1, 0.2))
                         done = True
                     elif (place + 1) % 2 == 1:
                         mat[randomX][randomY] = 2
                         mem[randomX][randomY] = 1
-                        agentArray.append(Agent([randomX, randomY], Main.getOrientation(), [0] * 4, 2, 1))
+                        agentArray.append(Agent([randomX, randomY], Main.getOrientation(), [0] * 4, 2, 0.2))
                         done = True
         return mat, mem, agentArray
 
