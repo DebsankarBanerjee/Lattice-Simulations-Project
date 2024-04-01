@@ -4,19 +4,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-matrixSize = 101  # gets you a 21x21 matrix
+matrixSize = 101 
 iterations = 1
 runtime = 10000
-beta = 1  # bias towards up and right
-epsilon = 0  # 0.01
+epsilon = 0
 numberOfAgents = 50
 k = 0
 baselineAgents = []
 testedAgents = []
-
-b = (1 / (beta + 1)) / 2  # pU, pR
-a = b * beta  # pD, pL
-
 a = 1
 b = 1
 
