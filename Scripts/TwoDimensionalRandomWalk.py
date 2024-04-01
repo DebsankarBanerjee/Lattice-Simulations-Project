@@ -59,9 +59,7 @@ class App:
     @staticmethod
     def generateMatrix():
         mat = [[0] * matrixSize for _ in range(matrixSize)]
-        # mat[random.randint(1, matrixSize - 1)][random.randint(1, matrixSize - 1)] = 1
         mat[math.floor(matrixSize / 2)][math.floor(matrixSize / 2)] = 1
-        # mat[0][matrixSize - 1] = 1
         return mat
 
     def getAgentPosition(mat):
