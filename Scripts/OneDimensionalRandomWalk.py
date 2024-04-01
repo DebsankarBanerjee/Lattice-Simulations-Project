@@ -104,7 +104,7 @@ class App:
                 mat = App.generateMatrix()
                 mem = App.generateMatrix()
                 persistence = [0] * 2
-                orientation = "L"
+                orientation = App.getOrientation()
                 agentPosition = int(matrixSize / 2)
                 for steps in range(int(runtime)):
                     try:
