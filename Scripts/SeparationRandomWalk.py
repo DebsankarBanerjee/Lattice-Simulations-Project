@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-matrixSize = 101  # gets you a 21x21 matrix
+matrixSize = 201  # gets you a 21x21 matrix
 iterations = 1
-runtime = 1
+runtime = 5000
 beta = 1  # bias towards up and right
 epsilon = 0  # 0.01
 numberOfAgents = 50
@@ -183,10 +183,10 @@ class Agent:
     @staticmethod
     def weights(strength, omega):
         V = omega * strength
-        if V > 20:
-            V = 20
-        # if V > 709:
-        #     V = 709
+        # if V > 20:
+        #     V = 20
+        if V > 709:
+            V = 709
         weight = np.exp(V)
         return weight
 
@@ -240,7 +240,7 @@ class Main:
                     if (place + 1) % 2 == 0:
                         mat[randomX][randomY] = 1
                         mem[randomX][randomY] = 1
-                        agentArray.append(Agent([randomX, randomY], Main.getOrientation(), [0] * 4, 1, 0))
+                        agentArray.append(Agent([randomX, randomY], Main.getOrientation(), [0] * 4, 1, 0.3))
                         done = True
                     elif (place + 1) % 2 == 1:
                         mat[randomX][randomY] = 2
@@ -280,7 +280,7 @@ def main():
                         (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
                         a * wR * persistence[3]))), a * ((wR * persistence[3]) / (
                         (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                        a * wR * persistence[3]))), wU, wR, wD, wL)
+                        a * wR * persistence[3]))), wU, wD, wL, wR)
                 agent.agentPosition = agentPosition
         for agent in agentArray:
             if agent.designation == 1:
