@@ -4,9 +4,10 @@ import numpy as np
 
 matrixSize = 1001
 iterations = 1000
-omega = 0.5
+omega = 0.1
 epsilon = 0
-k = 1.0
+k = 0
+runtime = 10001
 
 times = np.logspace(0.1, 4.0, num=20)
 for i in range(len(times)):
@@ -99,67 +100,67 @@ class App:
 
     @staticmethod
     def main():
-        for runtime in times:
-            for _ in range(iterations):
-                mat = App.generateMatrix()
-                mem = App.generateMatrix()
-                persistence = [0] * 2
-                orientation = App.getOrientation()
-                agentPosition = int(matrixSize / 2)
-                for steps in range(int(runtime)):
-                    try:
-                        wL = App.weights(mem[agentPosition - 1])
-                    except IndexError:
-                        wL = 0
-                    try:
-                        wR = App.weights(mem[agentPosition + 1])
-                    except IndexError:
-                        wR = 0
-                    persistence = App.persistence(persistence, orientation)
-                    mat[agentPosition] = 0
-                    mat, agentPosition, orientation = App.moveAgent(mat, agentPosition, ((wL * persistence[0]) / ((wL * persistence[0]) + (wR * persistence[1]))), ((wR * persistence[1]) / ((wL * persistence[0]) + (wR * persistence[1]))), wL, wR, persistence, orientation)
-                    mem[agentPosition] = mem[agentPosition] + 1
-                    #mem = App.memoryReduction(mem)
-                    if steps == times[0] - 1:
-                        values1.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[1] - 1:
-                        values2.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[2] - 1:
-                        values3.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[3] - 1:
-                        values4.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[4] - 1:
-                        values5.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[5] - 1:
-                        values6.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[6] - 1:
-                        values7.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[7] - 1:
-                        values8.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[8] - 1:
-                        values9.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[9] - 1:
-                        values10.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[10] - 1:
-                        values11.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[11] - 1:
-                        values12.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[12] - 1:
-                        values13.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[13] - 1:
-                        values14.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[14] - 1:
-                        values15.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[15] - 1:
-                        values16.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[16] - 1:
-                        values17.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[17] - 1:
-                        values18.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[18] - 1:
-                        values19.append(agentPosition - math.floor(matrixSize / 2))
-                    elif steps == times[19] - 1:
-                        values20.append(agentPosition - math.floor(matrixSize / 2))
+        for _ in range(iterations):
+            mat = App.generateMatrix()
+            mem = App.generateMatrix()
+            persistence = [0] * 2
+            orientation = App.getOrientation()
+            agentPosition = int(matrixSize / 2)
+            for steps in range(runtime):
+                try:
+                    wL = App.weights(mem[agentPosition - 1])
+                except IndexError:
+                    wL = 0
+                try:
+                    wR = App.weights(mem[agentPosition + 1])
+                except IndexError:
+                    wR = 0
+                persistence = App.persistence(persistence, orientation)
+                mat[agentPosition] = 0
+                mat, agentPosition, orientation = App.moveAgent(mat, agentPosition, ((wL * persistence[0]) / ((wL * persistence[0]) + (wR * persistence[1]))), ((wR * persistence[1]) / ((wL * persistence[0]) + (wR * persistence[1]))), wL, wR, persistence, orientation)
+                mem[agentPosition] = mem[agentPosition] + 1
+                #mem = App.memoryReduction(mem)
+                if steps == times[0] - 1:
+                    values1.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[1] - 1:
+                    values2.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[2] - 1:
+                    values3.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[3] - 1:
+                    values4.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[4] - 1:
+                    values5.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[5] - 1:
+                    values6.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[6] - 1:
+                    values7.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[7] - 1:
+                    values8.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[8] - 1:
+                    values9.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[9] - 1:
+                    values10.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[10] - 1:
+                    values11.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[11] - 1:
+                    values12.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[12] - 1:
+                    values13.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[13] - 1:
+                    values14.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[14] - 1:
+                    values15.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[15] - 1:
+                    values16.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[16] - 1:
+                    values17.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[17] - 1:
+                    values18.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[18] - 1:
+                    values19.append(agentPosition - math.floor(matrixSize / 2))
+                elif steps == times[19] - 1:
+                    values20.append(agentPosition - math.floor(matrixSize / 2))
+            print(_)
         msd = 0.0
         mstd = 0.0
         for w in range(iterations):
