@@ -66,18 +66,18 @@ class App:
         #     row += 1
         return ecm
 
-    def getAgentPosition(mat):
-        agentPosition = [0] * 2
-        i = 0
-        while i < len(mat):
-            j = 0
-            while j < len(mat[i]):
-                if mat[i][j] == 1:
-                    agentPosition[0] = i
-                    agentPosition[1] = j
-                j += 1
-            i += 1
-        return agentPosition
+    @staticmethod
+    def getOrientation():
+        r = random.uniform(0, 1)
+        if r <= 0.25:
+            orientation = "U"
+        elif 0.25 < r <= 0.5:
+            orientation = "D"
+        elif 0.5 < r <= 0.75:
+            orientation = "L"
+        else:
+            orientation = "R"
+        return orientation
 
     def weights(strength):
         V = omega * strength
@@ -87,17 +87,6 @@ class App:
             V = 709
         weight = np.exp(V)
         return weight
-
-    def getOrientation(oldAgentPosition, newAgentPosition, orientation):
-        if newAgentPosition[0] == oldAgentPosition[0] - 1:
-            orientation = "U"
-        elif newAgentPosition[0] == oldAgentPosition[0] + 1:
-            orientation = "D"
-        elif newAgentPosition[1] == oldAgentPosition[1] - 1:
-            orientation = "L"
-        elif newAgentPosition[1] == oldAgentPosition[1] + 1:
-            orientation = "R"
-        return orientation
 
     @staticmethod
     def persistence(persistence, orientation):
@@ -206,8 +195,8 @@ class App:
             residence = App.generateMatrix()
             # evolution = App.generateMatrix()
             persistence = [0] * 4
-            orientation = "U"
-            agentPosition = App.getAgentPosition(mat)
+            orientation = App.getOrientation()
+            agentPosition = [int(matrixSize / 2), int(matrixSize / 2)]
             for step in range(runtime):
                 try:
                     wU = App.weights(mem[agentPosition[0] - 1][agentPosition[1]])
@@ -237,7 +226,7 @@ class App:
                         (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
                         a * wR * persistence[3]))), wU, wD, wL, wR, persistence, orientation)
                 mem[agentPosition[0]][agentPosition[1]] += 1
-                mem = App.memoryReduction(mem, ecm)
+                # mem = App.memoryReduction(mem, ecm)
                 residence[agentPosition[0]][agentPosition[1]] = residence[agentPosition[0]][agentPosition[1]] + 1
                 # evolution[agentPosition[0]][agentPosition[1]] = step
                 if step == saveTime1:
