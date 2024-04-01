@@ -160,7 +160,6 @@ class App:
                     values19.append(agentPosition - math.floor(matrixSize / 2))
                 elif steps == times[19] - 1:
                     values20.append(agentPosition - math.floor(matrixSize / 2))
-            print(_)
         msd = 0.0
         mstd = 0.0
         for w in range(iterations):
