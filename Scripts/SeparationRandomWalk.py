@@ -4,19 +4,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import sys
 
-matrixSize = 201  # gets you a 21x21 matrix
+matrixSize = 201
 iterations = 1
 runtime = 5000
-beta = 1  # bias towards up and right
-epsilon = 0  # 0.01
+epsilon = 0 
 numberOfAgents = 50
 k = 0
 baselineAgents = []
 testedAgents = []
-
-b = (1 / (beta + 1)) / 2  # pU, pR
-a = b * beta  # pD, pL
-
 a = 1
 b = 1
 
@@ -183,7 +178,7 @@ class Agent:
     @staticmethod
     def weights(strength, omega):
         V = omega * strength
-        # if V > 20:
+        # if V > 20: memory thresholding
         #     V = 20
         if V > 709:
             V = 709
