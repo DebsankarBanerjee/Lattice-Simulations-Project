@@ -1,9 +1,8 @@
 import random
 import math
-import matplotlib.pyplot as plt
 import numpy as np
 
-matrixSize = 1000
+matrixSize = 1001
 iterations = 1000
 omega = 0.5
 epsilon = 0
@@ -106,7 +105,7 @@ class App:
                 mem = App.generateMatrix()
                 persistence = [0] * 2
                 orientation = "L"
-                agentPosition = math.floor(matrixSize / 2)
+                agentPosition = int(matrixSize / 2)
                 for steps in range(int(runtime)):
                     try:
                         wL = App.weights(mem[agentPosition - 1])
@@ -118,7 +117,7 @@ class App:
                         wR = 0
                     persistence = App.persistence(persistence, orientation)
                     mat[agentPosition] = 0
-                    mat, agentPosition, orientation = App.moveAgent(mat, agentPosition, ((wL * persistence[0]) / ((wL * persistence[0]) + (wR * persistence[1]))), ((wR * persistence[1]) / ((wL * persistence[0]) + (wR * persistence[1]))), wR, wL, persistence, orientation)
+                    mat, agentPosition, orientation = App.moveAgent(mat, agentPosition, ((wL * persistence[0]) / ((wL * persistence[0]) + (wR * persistence[1]))), ((wR * persistence[1]) / ((wL * persistence[0]) + (wR * persistence[1]))), wL, wR, persistence, orientation)
                     mem[agentPosition] = mem[agentPosition] + 1
                     #mem = App.memoryReduction(mem)
                     if steps == times[0] - 1:
