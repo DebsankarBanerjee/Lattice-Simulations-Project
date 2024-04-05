@@ -1,7 +1,3 @@
-# can make function setProbabilities and then return array with a and b values if current beta setup not working
-# 1421 and 1422 runtimes and omega 1 cause overflow and invalid value errors leading to agent snapping to top left
-# 20 segments
-
 import random
 import math
 import matplotlib.pyplot as plt
@@ -51,13 +47,6 @@ class App:
                         ecm[row][col + i] = value
                     col += phaseLength
             row += 1
-        # row = 0
-        # while row < len(ecm):
-        #     col = 0
-        #     while col < len(ecm[row]):
-        #         ecm[row][col] = 0.5
-        #         col += 1
-        #     row += 1
         return ecm
 
     @staticmethod
@@ -75,8 +64,6 @@ class App:
 
     def weights(strength):
         V = omega * strength
-        # if V > 20:
-        #     V = 20
         if V > 709:
             V = 709
         weight = np.exp(V)
@@ -186,8 +173,6 @@ class App:
             mat = App.generateMatrix()
             mem = App.generateMatrix()
             ecm = App.generateECM()
-            residence = App.generateMatrix()
-            # evolution = App.generateMatrix()
             persistence = [0] * 4
             orientation = App.getOrientation()
             agentPosition = [int(matrixSize / 2), int(matrixSize / 2)]
@@ -221,36 +206,12 @@ class App:
                         wR * persistence[3])), wU, wD, wL, wR, persistence, orientation)
                 mem[agentPosition[0]][agentPosition[1]] += 1
                 mem = App.memoryReduction(mem, ecm)
-                residence[agentPosition[0]][agentPosition[1]] = residence[agentPosition[0]][agentPosition[1]] + 1
-                # evolution[agentPosition[0]][agentPosition[1]] = step
                 if step == saveTime1:
                     agentPosArray1.append(list(agentPosition))
                 if step == saveTime2:
                     agentPosArray2.append(list(agentPosition))
                 if step == saveTime3:
                     agentPosArray3.append(list(agentPosition))
-            # print(""
-            # App.print2D(mat)
-            # App.print2D(mem)
-            # print(runtime)
-            # agentPosition = App.getAgentPosition(mat)
-            # print("[", math.floor(matrixSize / 2), ",", math.floor(matrixSize / 2), "]")
-            # print(str(agentPosition))
-            # print(agentPosition[0] - 20)
-            # print(agentPosition[1] - 20)
-            # values.append(agentPosition[0] - math.floor(matrixSize / 2))
-            # values.append(agentPosition[1] - math.floor(matrixSize / 2))
-            # plt.subplot(211)
-            # plt.imshow(mem)
-            # plt.colorbar()
-            # plt.title("k = " + str(k) + ", omega = " + str(omega))
-            # plt.subplot(212)
-            # plt.imshow(residence)
-            # plt.subplots_adjust(bottom=0.1, right=0.8, top=0.9)
-            plt.imshow(mat)
-            plt.colorbar()
-            # plt.savefig("gradient.pdf", dpi=300)
-            plt.show()
 
 
 if __name__ == "__main__":
