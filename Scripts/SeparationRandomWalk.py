@@ -12,8 +12,6 @@ numberOfAgents = 50
 k = 0
 baselineAgents = []
 testedAgents = []
-a = 1
-b = 1
 
 
 class Agent:
@@ -267,15 +265,15 @@ def main():
                 except IndexError:
                     wR = 0
                 persistence = agent.calculatePersistence()
-                mat, mem, agentPosition = agent.moveAgent(mat, mem, a * ((wU * persistence[0]) / (
-                        (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                        a * wR * persistence[3]))), b * ((wD * persistence[1]) / (
-                        (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                        a * wR * persistence[3]))), b * ((wL * persistence[2]) / (
-                        (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                        a * wR * persistence[3]))), a * ((wR * persistence[3]) / (
-                        (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                        a * wR * persistence[3]))), wU, wD, wL, wR)
+                mat, mem, agentPosition = agent.moveAgent(mat, mem, (wU * persistence[0]) / (
+                        (wU * persistence[0]) + (wD * persistence[1]) + (wL * persistence[2]) +
+                        (wR * persistence[3])), (wD * persistence[1]) / (
+                        (wU * persistence[0]) + (wD * persistence[1]) + (wL * persistence[2]) +
+                        (wR * persistence[3])), (wL * persistence[2]) / (
+                        (wU * persistence[0]) + (wD * persistence[1]) + (wL * persistence[2]) +
+                        (wR * persistence[3])), (wR * persistence[3]) / (
+                        (wU * persistence[0]) + (wD * persistence[1]) + (wL * persistence[2]) +
+                        (wR * persistence[3])), wU, wD, wL, wR)
                 agent.agentPosition = agentPosition
         for agent in agentArray:
             if agent.designation == 1:
