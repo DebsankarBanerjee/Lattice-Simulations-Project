@@ -1,19 +1,18 @@
 import random
 import matplotlib.pyplot as plt
 import numpy as np
-import csv
 
-matrixSize = 101  # gets you a 21x21 matrix
+matrixSize = 101
 iterations = 250
-beta = 1  # bias towards up and right
-epsilon = 0.1  # 0.01
+beta = 1
+epsilon = 0.1
 numberOfAgents = 8
 k = 0
 baselineAgents = []
 testedAgents = []
 
-b = (1 / (beta + 1)) / 2  # pU, pR
-a = b * beta  # pD, pL
+b = (1 / (beta + 1)) / 2
+a = b * beta
 
 a = 1
 b = 1
@@ -247,18 +246,17 @@ class Main:
         for row in mat:
             print(row)
 
-    def getAgentPosition(mat):
-        agentPosition = [0] * 2
-        i = 0
-        while i < len(mat):
-            j = 0
-            while j < len(mat[i]):
-                if mat[i][j] == 1:
-                    agentPosition[0] = i
-                    agentPosition[1] = j
-                j += 1
-            i += 1
-        return agentPosition
+    def memoryReduction(mem):
+    i = 0
+    while i < len(mem):
+        j = 0
+        while j < len(mem[i]):
+            mem[i][j] = mem[i][j] - epsilon * mem[i][j]
+            if mem[i][j] < 0:
+                mem[i][j] = 0
+            j += 1
+        i += 1
+    return mem
 
     @staticmethod
     def getOrientation():
@@ -327,6 +325,7 @@ def main():
                         (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
                         a * wR * persistence[3]))), wU, wD, wL, wR)
                 agent.agentPosition = agentPosition
+                mem = Main.memoryReduction(mem)
                 if agent.designation == 1:
                     bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (agent.agentPosition[1] - int(matrixSize / 2)) ** 2
                 else:
