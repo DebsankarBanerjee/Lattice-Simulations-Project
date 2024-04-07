@@ -62,19 +62,6 @@ class App:
         mat[math.floor(matrixSize / 2)][math.floor(matrixSize / 2)] = 1
         return mat
 
-    def getAgentPosition(mat):
-        agentPosition = [0] * 2
-        i = 0
-        while i < len(mat):
-            j = 0
-            while j < len(mat[i]):
-                if mat[i][j] == 1:
-                    agentPosition[0] = i
-                    agentPosition[1] = j
-                j += 1
-            i += 1
-        return agentPosition
-
     def weights(strength):
         V = omega * strength
         if V > 709:
