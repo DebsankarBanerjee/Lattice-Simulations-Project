@@ -2,25 +2,18 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 
-matrixSize = 101
+matrixSize = 501
 iterations = 250
-beta = 1
-epsilon = 0.1
+beta = 1  # bias towards up and right
+epsilon = 0.1  # 0.01
 numberOfAgents = 8
 k = 0
 baselineAgents = []
 testedAgents = []
 
-b = (1 / (beta + 1)) / 2
-a = b * beta
-
-a = 1
-b = 1
-
 times = np.logspace(0.1, 4.0, num=20)
 for i in range(len(times)):
     times[i] = int(times[i])
-print(times)
 
 bvalues1 = []
 bvalues2 = []
@@ -77,6 +70,8 @@ class Agent:
     def moveAgent(self, mat, mem, pU, pD, pL, pR, wU, wD, wL, wR):
         r = random.uniform(0, 1)
         mat[self.agentPosition[0]][self.agentPosition[1]] = 0
+        if self.agentPosition[0] == 0 or self.agentPosition[0] == matrixSize - 1 or self.agentPosition[1] == 0 or self.agentPosition == matrixSize - 1:
+            print("Oh no!")
         if r <= pU:
             if self.agentPosition[0] != 0 and mat[self.agentPosition[0] - 1][self.agentPosition[1]] == 0:
                 mat[self.agentPosition[0] - 1][self.agentPosition[1]] = self.designation
@@ -247,16 +242,15 @@ class Main:
             print(row)
 
     def memoryReduction(mem):
-    i = 0
-    while i < len(mem):
-        j = 0
-        while j < len(mem[i]):
-            mem[i][j] = mem[i][j] - epsilon * mem[i][j]
-            if mem[i][j] < 0:
-                mem[i][j] = 0
-            j += 1
-        i += 1
-    return mem
+        i = 0
+        while i < len(mem):
+            j = 0
+            while j < len(mem[i]):
+                if mem[i][j] > 0:
+                    mem[i][j] -= epsilon * mem[i][j]
+                j += 1
+            i += 1
+        return mem
 
     @staticmethod
     def getOrientation():
@@ -286,7 +280,7 @@ class Main:
                     else:
                         mat[randomX][randomY] = 2
                         mem[randomX][randomY] = 1
-                        agentArray.append(Agent([randomX, randomY], Main.getOrientation(), [0] * 4, 2, 1))
+                        agentArray.append(Agent([randomX, randomY], Main.getOrientation(), [0] * 4, 2, 0.5))
                     done = True
         return mat, mem, agentArray
 
@@ -294,7 +288,8 @@ class Main:
 def main():
     for iteration in range(iterations):
         mat, mem, agentArray = Main.generateMatrix()
-        for steps in range(int(times[19])):
+        print(iteration)
+        for steps in range(int(times[18])):
             bmsd = 0
             tmsd = 0
             for agent in agentArray:
@@ -315,21 +310,21 @@ def main():
                 except IndexError:
                     wR = 0
                 persistence = agent.calculatePersistence()
-                mat, mem, agentPosition = agent.moveAgent(mat, mem, a * ((wU * persistence[0]) / (
-                        (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                        a * wR * persistence[3]))), b * ((wD * persistence[1]) / (
-                        (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                        a * wR * persistence[3]))), b * ((wL * persistence[2]) / (
-                        (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                        a * wR * persistence[3]))), a * ((wR * persistence[3]) / (
-                        (a * wU * persistence[0]) + (b * wD * persistence[1]) + (b * wL * persistence[2]) + (
-                        a * wR * persistence[3]))), wU, wD, wL, wR)
+                mat, mem, agentPosition = agent.moveAgent(mat, mem, (wU * persistence[0]) / (
+                        (wU * persistence[0]) + (wD * persistence[1]) + (wL * persistence[2]) +
+                        (wR * persistence[3])), (wD * persistence[1]) / (
+                        (wU * persistence[0]) + (wD * persistence[1]) + (wL * persistence[2]) +
+                        (wR * persistence[3])), (wL * persistence[2]) / (
+                        (wU * persistence[0]) + (wD * persistence[1]) + (wL * persistence[2]) +
+                        (wR * persistence[3])), (wR * persistence[3]) / (
+                        (wU * persistence[0]) + (wD * persistence[1]) + (wL * persistence[2]) +
+                        (wR * persistence[3])), wU, wD, wL, wR)
                 agent.agentPosition = agentPosition
-                mem = Main.memoryReduction(mem)
                 if agent.designation == 1:
                     bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (agent.agentPosition[1] - int(matrixSize / 2)) ** 2
                 else:
                     tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+            mem = Main.memoryReduction(mem)
             if steps == times[0] - 1:
                 bmsd = 0
                 tmsd = 0
@@ -653,7 +648,8 @@ print(b19avg / iterations)
 b20avg = 0
 for msd in bvalues20:
     b20avg += msd
-print(b20avg / iterations, "\n")
+print(b20avg)
+print("\n")
 t1avg = 0
 for msd in tvalues1:
     t1avg += msd
