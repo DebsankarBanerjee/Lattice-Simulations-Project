@@ -4,10 +4,8 @@ import numpy as np
 
 matrixSize = 501
 iterations = 250
-beta = 1  # bias towards up and right
-epsilon = 0.1  # 0.01
+epsilon = 0.1
 numberOfAgents = 8
-k = 0
 baselineAgents = []
 testedAgents = []
 
@@ -551,21 +549,6 @@ def main():
                                     agent.agentPosition[1] - int(matrixSize / 2)) ** 2
                 bvalues19.append(bmsd / (numberOfAgents / 2))
                 tvalues19.append(tmsd / (numberOfAgents / 2))
-            elif steps == times[19] - 1:
-                bmsd = 0
-                tmsd = 0
-                for agent in agentArray:
-                    if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                    else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues20.append(bmsd / (numberOfAgents / 2))
-                tvalues20.append(tmsd / (numberOfAgents / 2))
-        # plt.imshow(mat)
-        # plt.colorbar()
-        # plt.show()
 
 
 main()
@@ -645,10 +628,6 @@ b19avg = 0
 for msd in bvalues19:
     b19avg += msd
 print(b19avg / iterations)
-b20avg = 0
-for msd in bvalues20:
-    b20avg += msd
-print(b20avg)
 print("\n")
 t1avg = 0
 for msd in tvalues1:
@@ -726,8 +705,4 @@ t19avg = 0
 for msd in tvalues19:
     t19avg += msd
 print(t19avg / iterations)
-t20avg = 0
-for msd in tvalues20:
-    t20avg += msd
-print(t20avg / iterations)
 
