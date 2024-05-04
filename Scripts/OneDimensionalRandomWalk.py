@@ -4,11 +4,9 @@ import numpy as np
 
 matrixSize = 1001
 iterations = 1000
-omega = 0.1
+omega = 0.005
 epsilon = 0
 k = 0
-runtime = 10001
-
 times = np.logspace(0.1, 4.0, num=20)
 for i in range(len(times)):
     times[i] = math.floor(times[i])
@@ -100,13 +98,14 @@ class App:
 
     @staticmethod
     def main():
-        for _ in range(iterations):
+        for iteration in range(iterations):
+            print(iteration)
             mat = App.generateMatrix()
             mem = App.generateMatrix()
             persistence = [0] * 2
             orientation = App.getOrientation()
             agentPosition = int(matrixSize / 2)
-            for steps in range(runtime):
+            for steps in range(times[19]):
                 try:
                     wL = App.weights(mem[agentPosition - 1])
                 except IndexError:
