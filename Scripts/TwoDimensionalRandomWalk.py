@@ -11,7 +11,6 @@ k = 0
 times = np.logspace(0.1, 4.0, num=20)
 for i in range(len(times)):
     times[i] = math.floor(times[i])
-print(times)
 
 values1 = []
 values2 = []
@@ -38,9 +37,7 @@ class App:
     @staticmethod
     def generateMatrix():
         mat = [[0] * matrixSize for _ in range(matrixSize)]
-        # mat[random.randint(1, matrixSize - 1)][random.randint(1, matrixSize - 1)] = 1
         mat[math.floor(matrixSize / 2)][math.floor(matrixSize / 2)] = 1
-        # mat[0][matrixSize - 1] = 1
         return mat
 
     def getAgentPosition(mat):
