@@ -2,16 +2,22 @@ import random
 import matplotlib.pyplot as plt
 import numpy as np
 
-matrixSize = 501
-iterations = 250
-epsilon = 0.1
+matrixSize = 601
+iterations = 500
+omega1 = 0
+omega2 = 0.5
+epsilon = 0.05
 numberOfAgents = 8
+num = numberOfAgents / 2
+k = 0
+densitySize = 1
 baselineAgents = []
 testedAgents = []
 
 times = np.logspace(0.1, 4.0, num=20)
 for i in range(len(times)):
     times[i] = int(times[i])
+print(times)
 
 bvalues1 = []
 bvalues2 = []
@@ -56,10 +62,10 @@ tvalues19 = []
 tvalues20 = []
 
 
-
 class Agent:
-    def __init__(self, agentPosition, orientation, persistence, designation, omega):
+    def __init__(self, agentPosition, startingPosition, orientation, persistence, designation, omega):
         self.agentPosition = agentPosition
+        self.startingPosition = startingPosition
         self.orientation = orientation
         self.persistence = persistence
         self.designation = designation
@@ -268,17 +274,17 @@ class Main:
         for place in range(numberOfAgents):
             done = False
             while not done:
-                randomX = random.randint(int(matrixSize / 2) - 1, int(matrixSize / 2) + 1)
-                randomY = random.randint(int(matrixSize / 2) - 1, int(matrixSize / 2) + 1)
+                randomX = random.randint(int(matrixSize / 2) - densitySize, int(matrixSize / 2) + densitySize)
+                randomY = random.randint(int(matrixSize / 2) - densitySize, int(matrixSize / 2) + densitySize)
                 if mat[randomX][randomY] == 0:
                     if place % 2 == 0:
                         mat[randomX][randomY] = 1
                         mem[randomX][randomY] = 1
-                        agentArray.append(Agent([randomX, randomY], Main.getOrientation(), [0] * 4, 1, 0))
+                        agentArray.append(Agent([randomX, randomY], [randomX, randomY], Main.getOrientation(), [0] * 4, 1, omega1))
                     else:
                         mat[randomX][randomY] = 2
                         mem[randomX][randomY] = 1
-                        agentArray.append(Agent([randomX, randomY], Main.getOrientation(), [0] * 4, 2, 0.5))
+                        agentArray.append(Agent([randomX, randomY], [randomX, randomY], Main.getOrientation(), [0] * 4, 2, omega2))
                     done = True
         return mat, mem, agentArray
 
@@ -287,9 +293,7 @@ def main():
     for iteration in range(iterations):
         mat, mem, agentArray = Main.generateMatrix()
         print(iteration)
-        for steps in range(int(times[18])):
-            bmsd = 0
-            tmsd = 0
+        for steps in range(int(times[19])):
             for agent in agentArray:
                 try:
                     wU = agent.weights(mem[agent.agentPosition[0] - 1][agent.agentPosition[1]], agent.omega)
@@ -318,391 +322,536 @@ def main():
                         (wU * persistence[0]) + (wD * persistence[1]) + (wL * persistence[2]) +
                         (wR * persistence[3])), wU, wD, wL, wR)
                 agent.agentPosition = agentPosition
-                if agent.designation == 1:
-                    bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                else:
-                    tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (agent.agentPosition[1] - int(matrixSize / 2)) ** 2
             mem = Main.memoryReduction(mem)
+            bmsd = 0
+            tmsd = 0
             if steps == times[0] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues1.append(bmsd / (numberOfAgents / 2))
-                tvalues1.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues1.append(bmsd / num)
+                tvalues1.append(tmsd / num)
             elif steps == times[1] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues2.append(bmsd / (numberOfAgents / 2))
-                tvalues2.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues2.append(bmsd / num)
+                tvalues2.append(tmsd / num)
             elif steps == times[2] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues3.append(bmsd / (numberOfAgents / 2))
-                tvalues3.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues3.append(bmsd / num)
+                tvalues3.append(tmsd / num)
             elif steps == times[3] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues4.append(bmsd / (numberOfAgents / 2))
-                tvalues4.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues4.append(bmsd / num)
+                tvalues4.append(tmsd / num)
             elif steps == times[4] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues5.append(bmsd / (numberOfAgents / 2))
-                tvalues5.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues5.append(bmsd / num)
+                tvalues5.append(tmsd / num)
             elif steps == times[5] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues6.append(bmsd / (numberOfAgents / 2))
-                tvalues6.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues6.append(bmsd / num)
+                tvalues6.append(tmsd / num)
             elif steps == times[6] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues7.append(bmsd / (numberOfAgents / 2))
-                tvalues7.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues7.append(bmsd / num)
+                tvalues7.append(tmsd / num)
             elif steps == times[7] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues8.append(bmsd / (numberOfAgents / 2))
-                tvalues8.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues8.append(bmsd / num)
+                tvalues8.append(tmsd / num)
             elif steps == times[8] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues9.append(bmsd / (numberOfAgents / 2))
-                tvalues9.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues9.append(bmsd / num)
+                tvalues9.append(tmsd / num)
             elif steps == times[9] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues10.append(bmsd / (numberOfAgents / 2))
-                tvalues10.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues10.append(bmsd / num)
+                tvalues10.append(tmsd / num)
             elif steps == times[10] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues11.append(bmsd / (numberOfAgents / 2))
-                tvalues11.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues11.append(bmsd / num)
+                tvalues11.append(tmsd / num)
             elif steps == times[11] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues12.append(bmsd / (numberOfAgents / 2))
-                tvalues12.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues12.append(bmsd / num)
+                tvalues12.append(tmsd / num)
             elif steps == times[12] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues13.append(bmsd / (numberOfAgents / 2))
-                tvalues13.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues13.append(bmsd / num)
+                tvalues13.append(tmsd / num)
             elif steps == times[13] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues14.append(bmsd / (numberOfAgents / 2))
-                tvalues14.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues14.append(bmsd / num)
+                tvalues14.append(tmsd / num)
             elif steps == times[14] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues15.append(bmsd / (numberOfAgents / 2))
-                tvalues15.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues15.append(bmsd / num)
+                tvalues15.append(tmsd / num)
             elif steps == times[15] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues16.append(bmsd / (numberOfAgents / 2))
-                tvalues16.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues16.append(bmsd / num)
+                tvalues16.append(tmsd / num)
             elif steps == times[16] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues17.append(bmsd / (numberOfAgents / 2))
-                tvalues17.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues17.append(bmsd / num)
+                tvalues17.append(tmsd / num)
             elif steps == times[17] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues18.append(bmsd / (numberOfAgents / 2))
-                tvalues18.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues18.append(bmsd / num)
+                tvalues18.append(tmsd / num)
             elif steps == times[18] - 1:
-                bmsd = 0
-                tmsd = 0
                 for agent in agentArray:
                     if agent.designation == 1:
-                        bmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
                     else:
-                        tmsd += (agent.agentPosition[0] - int(matrixSize / 2)) ** 2 + (
-                                    agent.agentPosition[1] - int(matrixSize / 2)) ** 2
-                bvalues19.append(bmsd / (numberOfAgents / 2))
-                tvalues19.append(tmsd / (numberOfAgents / 2))
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues19.append(bmsd / num)
+                tvalues19.append(tmsd / num)
+            elif steps == times[19] - 1:
+                for agent in agentArray:
+                    if agent.designation == 1:
+                        bmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                    else:
+                        tmsd += (agent.agentPosition[0] - agent.startingPosition[0]) ** 2 + (agent.agentPosition[1] - agent.startingPosition[1]) ** 2
+                bvalues20.append(bmsd / num)
+                tvalues20.append(tmsd / num)
+        # plt.imshow(mat)
+        # plt.colorbar()
+        # plt.show()
 
 
 main()
-b1avg = 0
-for msd in bvalues1:
-    b1avg += msd
-print(b1avg / iterations)
-b2avg = 0
-for msd in bvalues2:
-    b2avg += msd
-print(b2avg / iterations)
-b3avg = 0
-for msd in bvalues3:
-    b3avg += msd
-print(b3avg / iterations)
-b4avg = 0
-for msd in bvalues4:
-    b4avg += msd
-print(b4avg / iterations)
-b5avg = 0
-for msd in bvalues5:
-    b5avg += msd
-print(b5avg / iterations)
-b6avg = 0
-for msd in bvalues6:
-    b6avg += msd
-print(b6avg / iterations)
-b7avg = 0
-for msd in bvalues7:
-    b7avg += msd
-print(b7avg / iterations)
-b8avg = 0
-for msd in bvalues8:
-    b8avg += msd
-print(b8avg / iterations)
-b9avg = 0
-for msd in bvalues9:
-    b9avg += msd
-print(b9avg / iterations)
-b10avg = 0
-for msd in bvalues10:
-    b10avg += msd
-print(b10avg / iterations)
-b11avg = 0
-for msd in bvalues11:
-    b11avg += msd
-print(b11avg / iterations)
-b12avg = 0
-for msd in bvalues12:
-    b12avg += msd
-print(b12avg / iterations)
-b13avg = 0
-for msd in bvalues13:
-    b13avg += msd
-print(b13avg / iterations)
-b14avg = 0
-for msd in bvalues14:
-    b14avg += msd
-print(b14avg / iterations)
-b15avg = 0
-for msd in bvalues15:
-    b15avg += msd
-print(b15avg / iterations)
-b16avg = 0
-for msd in bvalues16:
-    b16avg += msd
-print(b16avg / iterations)
-b17avg = 0
-for msd in bvalues17:
-    b17avg += msd
-print(b17avg / iterations)
-b18avg = 0
-for msd in bvalues18:
-    b18avg += msd
-print(b18avg / iterations)
-b19avg = 0
-for msd in bvalues19:
-    b19avg += msd
-print(b19avg / iterations)
-print("\n")
-t1avg = 0
-for msd in tvalues1:
-    t1avg += msd
-print(t1avg / iterations)
-t2avg = 0
-for msd in tvalues2:
-    t2avg += msd
-print(t2avg / iterations)
-t3avg = 0
-for msd in tvalues3:
-    t3avg += msd
-print(t3avg / iterations)
-t4avg = 0
-for msd in tvalues4:
-    t4avg += msd
-print(t4avg / iterations)
-t5avg = 0
-for msd in tvalues5:
-    t5avg += msd
-print(t5avg / iterations)
-t6avg = 0
-for msd in tvalues6:
-    t6avg += msd
-print(t6avg / iterations)
-t7avg = 0
-for msd in tvalues7:
-    t7avg += msd
-print(t7avg / iterations)
-t8avg = 0
-for msd in tvalues8:
-    t8avg += msd
-print(t8avg / iterations)
-t9avg = 0
-for msd in tvalues9:
-    t9avg += msd
-print(t9avg / iterations)
-t10avg = 0
-for msd in tvalues10:
-    t10avg += msd
-print(t10avg / iterations)
-t11avg = 0
-for msd in tvalues11:
-    t11avg += msd
-print(t11avg / iterations)
-t12avg = 0
-for msd in tvalues12:
-    t12avg += msd
-print(t12avg / iterations)
-t13avg = 0
-for msd in tvalues13:
-    t13avg += msd
-print(t13avg / iterations)
-t14avg = 0
-for msd in tvalues14:
-    t14avg += msd
-print(t14avg / iterations)
-t15avg = 0
-for msd in tvalues15:
-    t15avg += msd
-print(t15avg / iterations)
-t16avg = 0
-for msd in tvalues16:
-    t16avg += msd
-print(t16avg / iterations)
-t17avg = 0
-for msd in tvalues17:
-    t17avg += msd
-print(t17avg / iterations)
-t18avg = 0
-for msd in tvalues18:
-    t18avg += msd
-print(t18avg / iterations)
-t19avg = 0
-for msd in tvalues19:
-    t19avg += msd
-print(t19avg / iterations)
+msd = 0
+mstd = 0
+print(bvalues1)
+for i in range(len(bvalues1)):
+    msd += bvalues1[i]
+    mstd += bvalues1[i] ** 2
+msd /= len(bvalues1)
+mstd /= len(bvalues1)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues1))
+print(times[0], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues2)):
+    msd += bvalues2[i]
+    mstd += bvalues2[i] ** 2
+msd /= iterations
+mstd /= iterations
+merr = np.sqrt((mstd - msd * msd) / len(bvalues2))
+print(times[1], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues3)):
+    msd += bvalues3[i]
+    mstd += bvalues3[i] ** 2
+msd /= len(bvalues3)
+mstd /= len(bvalues3)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues3))
+print(times[2], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues4)):
+    msd += bvalues4[i]
+    mstd += bvalues4[i] ** 2
+msd /= len(bvalues4)
+mstd /= len(bvalues4)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues4))
+print(times[3], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues5)):
+    msd += bvalues5[i]
+    mstd += bvalues5[i] ** 2
+msd /= len(bvalues5)
+mstd /= len(bvalues5)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues5))
+print(times[4], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues6)):
+    msd += bvalues6[i]
+    mstd += bvalues6[i] ** 2
+msd /= len(bvalues6)
+mstd /= len(bvalues6)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues6))
+print(times[5], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues7)):
+    msd += bvalues7[i]
+    mstd += bvalues7[i] ** 2
+msd /= len(bvalues7)
+mstd /= len(bvalues7)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues7))
+print(times[6], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues8)):
+    msd += bvalues8[i]
+    mstd += bvalues8[i] ** 2
+msd /= len(bvalues8)
+mstd /= len(bvalues8)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues8))
+print(times[7], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues9)):
+    msd += bvalues9[i]
+    mstd += bvalues9[i] ** 2
+msd /= len(bvalues9)
+mstd /= len(bvalues9)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues9))
+print(times[8], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues10)):
+    msd += bvalues10[i]
+    mstd += bvalues10[i] ** 2
+msd /= len(bvalues10)
+mstd /= len(bvalues10)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues10))
+print(times[9], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues11)):
+    msd += bvalues11[i]
+    mstd += bvalues11[i] ** 2
+msd /= len(bvalues11)
+mstd /= len(bvalues11)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues11))
+print(times[10], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues12)):
+    msd += bvalues12[i]
+    mstd += bvalues12[i] ** 2
+msd /= len(bvalues12)
+mstd /= len(bvalues12)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues12))
+print(times[11], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues13)):
+    msd += bvalues13[i]
+    mstd += bvalues13[i] ** 2
+msd /= len(bvalues13)
+mstd /= len(bvalues13)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues13))
+print(times[12], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues14)):
+    msd += bvalues14[i]
+    mstd += bvalues14[i] ** 2
+msd /= len(bvalues14)
+mstd /= len(bvalues14)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues14))
+print(times[13], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues15)):
+    msd += bvalues15[i]
+    mstd += bvalues15[i] ** 2
+msd /= len(bvalues15)
+mstd /= len(bvalues15)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues15))
+print(times[14], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues16)):
+    msd += bvalues16[i]
+    mstd += bvalues16[i] ** 2
+msd /= len(bvalues16)
+mstd /= len(bvalues16)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues16))
+print(times[15], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues17)):
+    msd += bvalues17[i]
+    mstd += bvalues17[i] ** 2
+msd /= len(bvalues17)
+mstd /= len(bvalues17)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues17))
+print(times[16], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues18)):
+    msd += bvalues18[i]
+    mstd += bvalues18[i] ** 2
+msd /= len(bvalues18)
+mstd /= len(bvalues18)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues18))
+print(times[17], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues19)):
+    msd += bvalues19[i]
+    mstd += bvalues19[i] ** 2
+msd /= len(bvalues19)
+mstd /= len(bvalues19)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues19))
+print(times[18], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(bvalues20)):
+    msd += bvalues20[i]
+    mstd += bvalues20[i] ** 2
+msd /= len(bvalues20)
+mstd /= len(bvalues20)
+merr = np.sqrt((mstd - msd * msd) / len(bvalues20))
+print(times[19], msd, merr)
 
+print("\n")
+
+msd = 0
+mstd = 0
+for i in range(len(tvalues1)):
+    msd += tvalues1[i]
+    mstd += tvalues1[i] ** 2
+msd /= len(tvalues1)
+mstd /= len(tvalues1)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues1))
+print(times[0], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues2)):
+    msd += tvalues2[i]
+    mstd += tvalues2[i] ** 2
+msd /= len(tvalues2)
+mstd /= len(tvalues2)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues2))
+print(times[1], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues3)):
+    msd += tvalues3[i]
+    mstd += tvalues3[i] ** 2
+msd /= len(tvalues3)
+mstd /= len(tvalues3)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues3))
+print(times[2], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues4)):
+    msd += tvalues4[i]
+    mstd += tvalues4[i] ** 2
+msd /= len(tvalues4)
+mstd /= len(tvalues4)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues4))
+print(times[3], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues5)):
+    msd += tvalues5[i]
+    mstd += tvalues5[i] ** 2
+msd /= len(tvalues5)
+mstd /= len(tvalues5)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues5))
+print(times[4], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues6)):
+    msd += tvalues6[i]
+    mstd += tvalues6[i] ** 2
+msd /= len(tvalues6)
+mstd /= len(tvalues6)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues6))
+print(times[5], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues7)):
+    msd += tvalues7[i]
+    mstd += tvalues7[i] ** 2
+msd /= len(tvalues7)
+mstd /= len(tvalues7)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues7))
+print(times[6], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues8)):
+    msd += tvalues8[i]
+    mstd += tvalues8[i] ** 2
+msd /= len(tvalues8)
+mstd /= len(tvalues8)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues8))
+print(times[7], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues9)):
+    msd += tvalues9[i]
+    mstd += tvalues9[i] ** 2
+msd /= len(tvalues9)
+mstd /= len(tvalues9)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues9))
+print(times[8], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues10)):
+    msd += tvalues10[i]
+    mstd += tvalues10[i] ** 2
+msd /= len(tvalues10)
+mstd /= len(tvalues10)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues10))
+print(times[9], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues11)):
+    msd += tvalues11[i]
+    mstd += tvalues11[i] ** 2
+msd /= len(tvalues11)
+mstd /= len(tvalues11)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues11))
+print(times[10], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues12)):
+    msd += tvalues12[i]
+    mstd += tvalues12[i] ** 2
+msd /= len(tvalues12)
+mstd /= len(tvalues12)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues12))
+print(times[11], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues13)):
+    msd += tvalues13[i]
+    mstd += tvalues13[i] ** 2
+msd /= len(tvalues13)
+mstd /= len(tvalues13)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues13))
+print(times[12], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues14)):
+    msd += tvalues14[i]
+    mstd += tvalues14[i] ** 2
+msd /= len(tvalues14)
+mstd /= len(tvalues14)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues14))
+print(times[13], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues15)):
+    msd += tvalues15[i]
+    mstd += tvalues15[i] ** 2
+msd /= len(tvalues15)
+mstd /= len(tvalues15)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues15))
+print(times[14], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues16)):
+    msd += tvalues16[i]
+    mstd += tvalues16[i] ** 2
+msd /= len(tvalues16)
+mstd /= len(tvalues16)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues16))
+print(times[15], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues17)):
+    msd += tvalues17[i]
+    mstd += tvalues17[i] ** 2
+msd /= len(tvalues17)
+mstd /= len(tvalues17)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues17))
+print(times[16], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues18)):
+    msd += tvalues18[i]
+    mstd += tvalues18[i] ** 2
+msd /= len(tvalues18)
+mstd /= len(tvalues18)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues18))
+print(times[17], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues19)):
+    msd += tvalues19[i]
+    mstd += tvalues19[i] ** 2
+msd /= len(tvalues19)
+mstd /= len(tvalues19)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues19))
+print(times[18], msd, merr)
+msd = 0
+mstd = 0
+for i in range(len(tvalues20)):
+    msd += tvalues20[i]
+    mstd += tvalues20[i] ** 2
+msd /= len(tvalues20)
+mstd /= len(tvalues20)
+merr = np.sqrt((mstd - msd * msd) / len(tvalues20))
+print(times[19], msd, merr)
