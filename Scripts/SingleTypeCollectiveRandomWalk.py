@@ -367,7 +367,6 @@ msd /= len(values1)
 mstd /= len(values1)
 merr = np.sqrt((mstd - msd * msd) / len(values1))
 f.write(str(times[0]) + ", " + str(msd) + ", " + str(merr) + "\n")
-# print(times[0], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values2)):
@@ -377,7 +376,6 @@ msd /= len(values2)
 mstd /= len(values2)
 merr = np.sqrt((mstd - msd * msd) / len(values2))
 f.write(str(times[1]) + ", " + str(msd) + ", " + str(merr) + "\n")
-# print(times[1], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values3)):
@@ -387,7 +385,6 @@ msd /= len(values3)
 mstd /= len(values3)
 merr = np.sqrt((mstd - msd * msd) / len(values3))
 f.write(str(times[2]) + ", " + str(msd) + ", " + str(merr) + "\n")
-# print(times[2], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values4)):
@@ -397,7 +394,6 @@ msd /= len(values4)
 mstd /= len(values4)
 merr = np.sqrt((mstd - msd * msd) / len(values4))
 f.write(str(times[3]) + ", " + str(msd) + ", " + str(merr) + "\n")
-# print(times[3], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values5)):
@@ -407,7 +403,6 @@ msd /= len(values5)
 mstd /= len(values5)
 merr = np.sqrt((mstd - msd * msd) / len(values5))
 f.write(str(times[4]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[4], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values6)):
@@ -417,7 +412,6 @@ msd /= len(values6)
 mstd /= len(values6)
 merr = np.sqrt((mstd - msd * msd) / len(values6))
 f.write(str(times[5]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[5], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values7)):
@@ -427,7 +421,6 @@ msd /= len(values7)
 mstd /= len(values7)
 merr = np.sqrt((mstd - msd * msd) / len(values7))
 f.write(str(times[6]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[6], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values8)):
@@ -437,7 +430,6 @@ msd /= len(values8)
 mstd /= len(values8)
 merr = np.sqrt((mstd - msd * msd) / len(values8))
 f.write(str(times[7]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[7], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values9)):
@@ -447,7 +439,6 @@ msd /= len(values9)
 mstd /= len(values9)
 merr = np.sqrt((mstd - msd * msd) / len(values9))
 f.write(str(times[8]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[8], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values10)):
@@ -457,7 +448,6 @@ msd /= len(values10)
 mstd /= len(values10)
 merr = np.sqrt((mstd - msd * msd) / len(values10))
 f.write(str(times[9]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[9], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values11)):
@@ -467,7 +457,6 @@ msd /= len(values11)
 mstd /= len(values11)
 merr = np.sqrt((mstd - msd * msd) / len(values11))
 f.write(str(times[10]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[10], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values12)):
@@ -477,7 +466,6 @@ msd /= len(values12)
 mstd /= len(values12)
 merr = np.sqrt((mstd - msd * msd) / len(values12))
 f.write(str(times[11]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[11], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values13)):
@@ -487,7 +475,6 @@ msd /= len(values13)
 mstd /= len(values13)
 merr = np.sqrt((mstd - msd * msd) / len(values13))
 f.write(str(times[12]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[12], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values14)):
@@ -497,7 +484,6 @@ msd /= len(values14)
 mstd /= len(values14)
 merr = np.sqrt((mstd - msd * msd) / len(values14))
 f.write(str(times[13]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[13], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values15)):
@@ -507,7 +493,6 @@ msd /= len(values15)
 mstd /= len(values15)
 merr = np.sqrt((mstd - msd * msd) / len(values15))
 f.write(str(times[14]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[14], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values16)):
@@ -517,7 +502,6 @@ msd /= len(values16)
 mstd /= len(values16)
 merr = np.sqrt((mstd - msd * msd) / len(values16))
 f.write(str(times[15]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[15], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values17)):
@@ -527,7 +511,6 @@ msd /= len(values17)
 mstd /= len(values17)
 merr = np.sqrt((mstd - msd * msd) / len(values17))
 f.write(str(times[16]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[16], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values18)):
@@ -537,7 +520,6 @@ msd /= len(values18)
 mstd /= len(values18)
 merr = np.sqrt((mstd - msd * msd) / len(values18))
 f.write(str(times[17]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[17], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values19)):
@@ -547,7 +529,6 @@ msd /= len(values19)
 mstd /= len(values19)
 merr = np.sqrt((mstd - msd * msd) / len(values19))
 f.write(str(times[18]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[18], msd, merr)
 msd = 0
 mstd = 0
 for i in range(len(values20)):
@@ -557,4 +538,3 @@ msd /= len(values20)
 mstd /= len(values20)
 merr = np.sqrt((mstd - msd * msd) / len(values20))
 f.write(str(times[19]) + ", " + str(msd) + ", " + str(merr) + "\n")
-print(times[19], msd, merr)
