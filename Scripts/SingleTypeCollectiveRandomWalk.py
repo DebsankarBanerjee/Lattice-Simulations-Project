@@ -8,7 +8,7 @@ numberOfAgents = 8
 densitySize = 1
 k = 0
 
-# 0.3, 0.05, 0.5omega
+# 0.3, 0.05, 0.5omega for emergent collective motion
 
 times = np.logspace(0.1, 4.0, num=20)
 for i in range(len(times)):
